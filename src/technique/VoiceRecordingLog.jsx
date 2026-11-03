@@ -19,7 +19,7 @@ export default function VoiceRecordingLog({skillId,kind,bookmarkId,clipId,logs=[
    <strong>녹음·훈련 로그 ({entries.length})</strong>
    {!entries.length&&<p className="sing-voice-muted">저장된 녹음이 없어.</p>}
    {entries.map(log=><div className="sing-voice-entry" key={log.id}>
-    <div className="sing-voice-entry-heading"><div><b>{dateLabel(log.date)} · {duration(log.seconds)}</b><small>자가 평가 {log.score??'-'}/5{log.note?' · '+log.note:''}</small></div><button type="button" aria-label="녹음 로그 삭제" onClick={()=>{if(confirm('이 녹음 로그를 삭제할까요? 음성 파일은 저장소에 남을 수 있어요.'))onDelete(log.id)}}><Trash2 size={15}/></button></div>
+    <div className="sing-voice-entry-heading"><div><b>{dateLabel(log.date)} · {duration(log.seconds)}</b><small>자가 평가 {log.score??'-'}/5{log.note?' · '+log.note:''}</small></div><button type="button" aria-label="녹음 로그 삭제" onClick={()=>{if(confirm('이 녹음 파일과 기록을 영구 삭제할까요?'))Promise.resolve(onDelete(log.id)).catch(err=>alert('삭제 실패: '+err.message))}}><Trash2 size={15}/></button></div>
     <RecordingAudio log={log}/>
    </div>)}
    {entries.filter(l=>l.media?.path||l.localAudio).length>1&&<div className="sing-voice-compare">
