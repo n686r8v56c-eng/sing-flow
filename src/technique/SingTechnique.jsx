@@ -15,7 +15,7 @@ export default function SingTechnique({value,onChange,mode='technique'}){
  const guideCategories=isTraining?trainingGuideCategories:vocalTechniqueCategories;
  const itemLabel=isTraining?'훈련':'기술';
  const d={...empty(),...(value||{})};
- const [sub,Sub]=useState('skills'),[query,Q]=useState(''),[major,A]=useState('전체'),[minor,B]=useState('전체');
+ const [sub,Sub]=useState('bookmarks'),[query,Q]=useState(''),[major,A]=useState('전체'),[minor,B]=useState('전체');
  const [modal,M]=useState(null),[guide,G]=useState(false);
  const mutate=fn=>onChange(old=>{const next=structuredClone({...empty(),...(old||{})});fn(next);return next});
  const open=(type,item)=>{G(false);M({type,item:item?{...structuredClone(item),...(type==='bookmarks'?{_existing:true}:{})}:type==='skills'?{id:uid(),genre:VOCAL_GENRE,name:'',category:'',subcategory:'',status:'미습득',images:[],memo:''}:type==='bookmarks'?{id:uid(),genre:VOCAL_GENRE,title:'',url:'',clips:[],skillIds:[],memo:''}:{id:uid(),genre:VOCAL_GENRE,title:'',memo:''}})};
