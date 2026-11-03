@@ -62,10 +62,10 @@ export default function SingTechnique({value,onChange,mode='technique',recording
   const other=lines.filter(line=>line!==url);
   const {entries,invalid}=parseChapterLines(other.join('\n'));
   if(invalid.length)return QuickPasteNotice('목차 형식 오류: '+invalid.join(', ')+'번째 항목 · 예시: 04:03 복압 잡는 법');
-  if(!entries.length)return QuickPasteNotice('타임스탬프와 핵심 내용을 한 줄씩 입력해 줘.');
+  if(!id&&!entries.length)return QuickPasteNotice('유튜브 URL 또는 타임스탬프를 입력해 줘.');
   if(entries.some((e,i)=>i>0&&e.start<=entries[i-1].start))return QuickPasteNotice('타임스탬프는 위에서 아래로 시간순으로 넣어 줘.');
   if(id&&d.bookmarks.some(b=>videoId(b.url)===id)&&!confirm('같은 영상이 있어. 기존 기록은 유지하고 별도 북마크로 등록할까?'))return;
-  const bookmarkId=uid(),fallbackTitle=id?'유튜브 영상 · '+id:(entries[0].label||'타임마커 노트');
+  const bookmarkId=uid(),fallbackTitle=id?'유튜브 영상 · '+id:(entries[0]?.label||'타임마커 노트');
   const fmtTime=value=>String(Math.floor(value/60)).padStart(2,'0')+':'+String(value%60).padStart(2,'0');
   const clips=entries.map(e=>({id:uid(),skillId:'',label:e.label,start:fmtTime(e.start),end:fmtTime(e.start+1),caution:'',memo:'',quickMarked:true,chapterImported:true}));
   mutate(state=>{state.bookmarks.push({id:bookmarkId,genre:VOCAL_GENRE,title:fallbackTitle,url,clips,skillIds:[],memo:''})});
@@ -110,9 +110,9 @@ export default function SingTechnique({value,onChange,mode='technique',recording
  <div className="sing-tech-subtabs">{[['bookmarks','북마크 ('+d.bookmarks.length+')'],['skills',itemLabel],['notes',isSong?'학습 메모':'학습 노트']].map(([key,label])=><button type="button" key={key} className={sub===key?'on':''} onClick={()=>{Sub(key);Q('');if(key!=='bookmarks')LinkedSkill(null)}}>{label}</button>)}</div>
  <div className="sing-tech-heading"><h2>{sub==='skills'?itemLabel+' 라이브러리':sub==='bookmarks'?'영상 북마크':isSong?'학습 메모':'학습 노트'}</h2><button type="button" className="sing-tech-primary" onClick={()=>open(sub)}><Plus size={15}/> 추가</button></div>
  {sub==='bookmarks'&&isTraining&&<div className="sing-quick-import">
- <label htmlFor="sing-quick-import-text"><b>타임스탬프 일괄 등록 · URL 선택</b></label>
+ <label htmlFor="sing-quick-import-text"><b>영상 URL · 타임스탬프 등록 (둘 다 선택 가능)</b></label>
  <textarea id="sing-quick-import-text" rows={5} value={quickPaste} onChange={e=>{QuickPaste(e.target.value);QuickPasteNotice('')}} placeholder={'https://www.youtube.com/watch?v=XXXXXXXXXXX\n00:00 도입\n01:03 배에 힘을 주는 방법\n04:03 복압 잡는 법'} />
- <div className="sing-quick-import-actions"><small>타임스탬프만 붙여넣어도 저장 · URL을 추가하면 영상과 연결</small><button type="button" className="sing-tech-primary" onClick={importVideoAndMarkers} disabled={!quickPaste.trim()||quickPasteBusy}><Plus size={14}/> 한 번에 등록</button></div>
+ <div className="sing-quick-import-actions"><small>URL만 등록해도 저장 · 목차는 선택 · 타임스탬프만 등록도 가능</small><button type="button" className="sing-tech-primary" onClick={importVideoAndMarkers} disabled={!quickPaste.trim()||quickPasteBusy}><Plus size={14}/> 한 번에 등록</button></div>
  {quickPasteNotice&&<small className="sing-quick-import-status" role="status">{quickPasteNotice}</small>}
  </div>}
  {sub==='bookmarks'&&linkedSkill&&<div className="sing-tech-linked-filter"><span><Bookmark size={13}/> {d.skills.find(s=>s.id===linkedSkill)?.name||'선택한 항목'} · 연결 북마크 {relatedBookmarks(linkedSkill).length}개</span><button type="button" onClick={()=>{LinkedSkill(null);Q('')}}>전체 보기 ×</button></div>}
