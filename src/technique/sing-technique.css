@@ -180,3 +180,10 @@
 .sing-tech .tech-note-export{flex-wrap:wrap;justify-content:flex-end}
 .sing-tech .tech-note-export .tech-note-copy-all{background:#e7daf4;color:#684993;font-weight:700}
 .sing-tech .tech-copy-status{display:block;font-size:11px;color:#7654a1;margin:0 0 7px}
+
+
+/* Learning notes simplified: only copy-all and compact source-link icon */
+.sing-tech .tech-note-head>.tech-note-copy-all{display:inline-flex;align-items:center;justify-content:center;gap:5px;background:#e7daf4;color:#684993;font-size:11px!important;font-weight:700;padding:7px 10px;border-radius:8px;border:0;min-height:34px}
+.sing-tech .tech-note-head>.tech-note-copy-all:disabled{opacity:.5}
+.sing-tech .tech-note-actions{gap:0;align-items:flex-start}
+.sing-tech .tech-note-youtube{width:32px;height:32px;min-width:32px;padding:0;display:grid;place-items:center;border-radius:8px}
