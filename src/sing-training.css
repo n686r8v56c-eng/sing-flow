@@ -1,0 +1,41 @@
+/* Compact training library modeled on Sing Flow's technique tab */
+.sing-training,.sing-training *{box-sizing:border-box;min-width:0}
+.sing-training{max-width:100%;width:100%}
+.sing-training-heading{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:12px}
+.sing-training-heading h2{margin:0;font-size:18px}
+.sing-training-tabs{display:flex;background:#f1eafa;border-radius:10px;padding:3px;gap:3px;margin-bottom:12px}
+.sing-training-tabs button{flex:1;border:0;background:transparent;border-radius:8px;padding:9px;font-size:12px;color:#836c9e}
+.sing-training-tabs button.on{background:white;color:#704ca8;font-weight:750}
+.sing-training-search{display:flex;align-items:center;gap:7px;background:white;border:1px solid #e7dfed;border-radius:9px;padding-left:9px;margin-bottom:8px;color:#8b7a99}
+.sing-training-search input{flex:1;width:100%;border:0;min-height:37px;font-size:16px;padding:8px 6px}
+.sing-training-filters{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-bottom:10px}
+.sing-training-filters select{width:100%;min-width:0;max-width:100%;font-size:16px;border:1px solid #e7dfed;border-radius:9px;background:white;padding:8px}
+.sing-training-list{background:white;border:1px solid #ece5f2;border-radius:11px;overflow:hidden}
+.sing-training-line{display:flex;align-items:center;gap:7px;padding:7px 8px;min-height:51px;border-bottom:1px solid #f0ebf4}
+.sing-training-line:last-child{border:0}
+.sing-training-placeholder{width:36px;height:36px;flex:none;border-radius:7px;background:#f3eef9;color:#9d88ba;display:grid;place-items:center}
+.sing-training-line-main{flex:1;display:grid;gap:4px;text-align:left;background:none;border:0;padding:0}
+.sing-training-line-main b{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sing-training-line-main small{font-size:10px;color:#90839b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sing-training-bookmark-count{font-size:10px;color:#8c6ca9;flex:none}
+.sing-training-pencil{border:0;background:none;color:#7e62aa;display:grid;place-items:center;padding:7px;flex:none}
+.sing-training-empty{padding:18px;text-align:center;font-size:12px;color:#978aa3}
+.sing-training-overlay{position:fixed;inset:0;z-index:80;display:flex;align-items:flex-end;justify-content:center;background:#1e13264c;padding:0;overflow:hidden}
+.sing-training-modal{width:100%;max-width:560px;max-height:min(91dvh,850px);display:flex;flex-direction:column;background:white;border-radius:17px 17px 0 0;overflow:hidden;box-shadow:0 -8px 45px #26133328}
+.sing-training-modalhead{height:50px;min-height:50px;flex:none;display:flex;align-items:center;justify-content:space-between;padding:0 14px;border-bottom:1px solid #f0edf3}
+.sing-training-modalhead strong{font-size:15px}
+.sing-training-modalhead button{border:0;background:none;color:#7654a1;padding:7px}
+.sing-training-editor{padding:14px 14px max(22px,env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:12px;overflow-y:auto;overscroll-behavior:contain}
+.sing-training-editor label{display:flex;flex-direction:column;gap:5px;font-size:11px;color:#887c93;font-weight:650}
+.sing-training-editor input,.sing-training-editor select,.sing-training-editor textarea{width:100%;max-width:100%;min-width:0;font-size:16px!important;border:1px solid #e7dfed;border-radius:9px;padding:9px 10px;background:white}
+.sing-training-editor textarea{min-height:90px;resize:vertical}
+.sing-training-bookmark-head{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.sing-training-bookmark-head strong,.sing-training-recording>strong,.sing-training-log-title{font-size:13px;color:#332a41}
+.sing-training-light{display:inline-flex;align-items:center;gap:4px;padding:7px 9px;background:#eee8f5;color:#7654a1;border:0;border-radius:7px;font-size:11px}
+.sing-training-bookmark-row{display:flex;align-items:center;gap:7px;text-align:left;width:100%;border:1px solid #eee7f5;background:#faf8fc;color:#65409a;border-radius:8px;padding:8px;font-size:12px}
+.sing-training-bookmark-row span{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sing-training-recording{display:flex;flex-direction:column;gap:10px}
+.sing-training-save{width:100%;min-height:42px;display:flex;align-items:center;justify-content:center;gap:6px;background:#8565b6;border:0;border-radius:9px;color:white;font-size:14px;font-weight:650}
+.sing-training-remove,.sing-training-cancel{border:0;background:none;color:#7654a1;font-size:12px;display:flex;justify-content:center;align-items:center;gap:6px;padding:10px}
+.sing-training-external{display:inline-flex;align-items:center;gap:5px;font-size:12px;color:#78569e}
+@media(min-width:750px){.sing-training-overlay{align-items:center;padding:20px}.sing-training-modal{border-radius:15px;max-height:86dvh}}
