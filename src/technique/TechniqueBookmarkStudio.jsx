@@ -53,7 +53,7 @@ function SkillSearch({skills,selectedId,onSelect,label='연결할 기술'}){
  </div>
 }
 function Video({id,onReady,onPlaying}){const host=useRef(null);useEffect(()=>{if(!id){onReady(null);return}let instance,disposed=false;const mount=()=>{if(disposed||!window.YT?.Player||!host.current)return;instance=new window.YT.Player(host.current,{videoId:id,playerVars:{playsinline:1,rel:0},events:{onReady:e=>onReady(e.target),onStateChange:e=>onPlaying(e.data===1)}})};if(window.YT?.Player)mount();else{const previous=window.onYouTubeIframeAPIReady;window.onYouTubeIframeAPIReady=()=>{previous?.();mount()};if(!document.querySelector('script[src="https://www.youtube.com/iframe_api"]')){const script=document.createElement('script');script.src='https://www.youtube.com/iframe_api';document.head.appendChild(script)}}return()=>{disposed=true;onReady(null);try{instance?.destroy()}catch{}}},[id]);return id?<div className="tech-video" ref={host}/>:<div className="tech-video tech-no-video">유튜브 URL을 등록해 줘.</div>}
-export default function TechniqueBookmarkStudio({item,genres,skills,onSave,onDelete,onEvaluate,recordingLogs=[],recordingKind='technique',onSaveRecording,onDeleteRecording,songMode=false,onUploadMR,onPersistMRSettings,onPlaybackSeconds,draftScope='guest'}){const draftKey='sing-flow-bookmark-draft-v2:'+draftScope+':'+recordingKind+':'+item.id;
+export default function TechniqueBookmarkStudio({item,genres,skills,onSave,onAutoSave,onDelete,onEvaluate,recordingLogs=[],recordingKind='technique',onSaveRecording,onDeleteRecording,songMode=false,onUploadMR,onPersistMRSettings,onPlaybackSeconds,draftScope='guest'}){const draftKey='sing-flow-bookmark-draft-v2:'+draftScope+':'+recordingKind+':'+item.id;
 const restoredDraft=useRef(null);
 if(restoredDraft.current===null){
  try{const saved=JSON.parse(localStorage.getItem(draftKey)||'null');
@@ -64,7 +64,7 @@ const [v,V]=useState(()=>{
  const saved=restoredDraft.current;
  return {...item,...(saved.v||{}),mr:item.mr,clips:Array.isArray(saved.v?.clips)?saved.v.clips:normalizedClips(item)};
 }),[mode,M]=useState(restoredDraft.current.mode|| (item._existing?'practice':'edit')),[index,I]=useState(restoredDraft.current.index||0),[repeat,R]=useState(true),[playing,P]=useState(false),[time,T]=useState(0),[videoDuration,VideoDuration]=useState(0),[zoom,Z]=useState(false),[status,S]=useState(''),[note,N]=useState(''),[ready,Q]=useState(false),[mrReady,MRReady]=useState(false),[source,Source]=useState('youtube'),[mrFile,MRFile]=useState(null),[mrBusy,MRBusy]=useState(false),[mrUrl,MRUrl]=useState(''),[mrError,MRError]=useState(''),[chapterText,ChapterText]=useState(restoredDraft.current.chapterText||''),[chapterNotice,ChapterNotice]=useState('');
-const player=useRef(null),mrPlayer=useRef(null),playbackPending=useRef(0),playbackCallback=useRef(onPlaybackSeconds),playbackActive=useRef(false),edited=useRef(Boolean(item.title||restoredDraft.current.v?.title)),clip=v.clips[index],id=videoId(v.url),current=skills.filter(s=>s.genre===v.genre),[titleLoading,TL]=useState(false),[titleNotice,TN]=useState('');
+const autoSaveRef=useRef(onAutoSave),player=useRef(null),mrPlayer=useRef(null),playbackPending=useRef(0),playbackCallback=useRef(onPlaybackSeconds),playbackActive=useRef(false),edited=useRef(Boolean(item.title||restoredDraft.current.v?.title)),clip=v.clips[index],id=videoId(v.url),current=skills.filter(s=>s.genre===v.genre),[titleLoading,TL]=useState(false),[titleNotice,TN]=useState('');
 // Safari can discard an inactive tab or cross-origin iframe; keep edit state across reloads.
 useEffect(()=>{
  try{
@@ -73,6 +73,31 @@ useEffect(()=>{
  }catch{}
 },[draftKey,item.id,v,mode,index,chapterText]);
 const clearEditorDraft=()=>{try{localStorage.removeItem(draftKey)}catch{}};
+autoSaveRef.current=onAutoSave;
+useEffect(()=>{
+ // Save completed field edits without closing the editor. Incomplete entries stay in the local draft.
+ if(mode!=='edit'||!autoSaveRef.current||!String(v.title||'').trim()||!videoId(v.url))return;
+ if(songMode&&!skills.some(skill=>skill.id===v.songId))return;
+ if(v.clips.some(c=>!Number.isFinite(sec(c.start))||!Number.isFinite(sec(c.end))||sec(c.start)<0||sec(c.end)<=sec(c.start)))return;
+ if(!songMode&&v.clips.some(c=>!c.fullVideo&&!c.chapterImported&&!skills.some(skill=>skill.id===c.skillId)))return;
+ const timer=setTimeout(()=>{
+  const cleaned={...v};
+  delete cleaned._existing;
+  autoSaveRef.current?.(cleaned);
+ },700);
+ return()=>clearTimeout(timer);
+},[v,mode,songMode,skills.length]);
+useEffect(()=>{
+ const persistDraft=()=>{
+  try{localStorage.setItem(draftKey,JSON.stringify({id:item.id,v:{...v,mr:undefined},mode,index,chapterText}))}catch{}
+ };
+ document.addEventListener('visibilitychange',persistDraft);
+ window.addEventListener('pagehide',persistDraft);
+ return()=>{
+  document.removeEventListener('visibilitychange',persistDraft);
+  window.removeEventListener('pagehide',persistDraft);
+ };
+},[draftKey,item.id,v,mode,index,chapterText]);
 playbackCallback.current=onPlaybackSeconds;
 const flushPlayback=()=>{
  const amount=playbackPending.current;
