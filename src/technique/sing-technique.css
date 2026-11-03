@@ -175,3 +175,8 @@
 .sing-tech .tech-note-export button:disabled{opacity:.55;cursor:default}
 .sing-tech .tech-export-scope{display:block;color:#9586a3;font-size:10px;line-height:1.5;margin:-2px 0 9px}
 .sing-tech .tech-export-error{display:block;color:#a04775;font-size:11px;margin:4px 0 9px}
+
+/* One-tap copy of every currently visible learning note */
+.sing-tech .tech-note-export{flex-wrap:wrap;justify-content:flex-end}
+.sing-tech .tech-note-export .tech-note-copy-all{background:#e7daf4;color:#684993;font-weight:700}
+.sing-tech .tech-copy-status{display:block;font-size:11px;color:#7654a1;margin:0 0 7px}
