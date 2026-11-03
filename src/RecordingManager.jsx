@@ -16,7 +16,7 @@ export default function RecordingManager({logs=[],songs=[],trainings=[],techniqu
  const cutoff=threshold?Date.now()-threshold*86400000:0;
  const visible=useMemo(()=>logs.filter(l=>(scope==='전체'||label(l,songs,trainings,techniques)===scope)&&(!cutoff||(Number.isFinite(Date.parse(l.date))&&Date.parse(l.date)<cutoff))).sort((a,b)=>order==='큰 파일순'?bytesOf(b)-bytesOf(a):Date.parse(b.date||0)-Date.parse(a.date||0)),[logs,scope,cutoff,order,songs,trainings,techniques]);
  const eligible=visible.filter(l=>!l.pinned);
- const picked=eligible.filter(l=>selected.includes(l.id));
+ const picked=logs.filter(l=>!l.pinned&&selected.includes(l.id));
  const size=logs.reduce((a,l)=>a+bytesOf(l),0),pickedSize=picked.reduce((a,l)=>a+bytesOf(l),0);
  const pick=id=>Q(prev=>prev.includes(id)?prev.filter(x=>x!==id):[...prev,id]);
  const all=()=>Q(prev=>eligible.every(l=>prev.includes(l.id))?prev.filter(id=>!eligible.some(l=>l.id===id)):[...new Set([...prev,...eligible.map(l=>l.id)])]);
