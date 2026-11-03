@@ -263,3 +263,9 @@
 .tech-chapter-import-foot small{font-size:10px;color:#85788f;line-height:1.5;flex:1;min-width:180px}
 .tech-chapter-import-foot button{min-height:33px;padding:6px 10px;white-space:nowrap}
 .tech-chapter-notice{color:#77529a;font-size:11px;font-weight:600;line-height:1.5}
+
+/* Training videos use timestamp markers rather than A-B loop clips */
+.sing-tech .tech-point-time,.sing-tech .tech-point-play{display:grid;grid-template-columns:minmax(0,1fr);gap:7px}
+.sing-tech .tech-point-time input{width:100%}
+.sing-tech .tech-point-linked{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;background:#f5f0fa;border-radius:9px;padding:9px 10px;font-size:11px;color:#74518f}
+.sing-tech .tech-point-linked span{font-size:11px;color:#504257;overflow-wrap:anywhere}
