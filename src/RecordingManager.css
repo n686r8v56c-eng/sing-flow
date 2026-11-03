@@ -1,0 +1,27 @@
+.recording-manager,.recording-manager *{box-sizing:border-box;min-width:0}
+.recording-manager{display:flex;flex-direction:column;gap:10px;margin:10px 0 20px}
+.rm-metrics{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+.rm-metrics>div{background:#f3eef9;border-radius:10px;padding:12px;display:grid;gap:4px}
+.rm-metrics small,.rm-main small,.rm-bottom small{font-size:11px;color:#8f819c}
+.rm-metrics b{font-size:19px;color:#30223c}
+.rm-hint{font-size:11px;color:#91849b;display:flex;align-items:center;gap:5px;line-height:1.5}
+.rm-filters{display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:6px}
+.rm-filters select{width:100%;font-size:16px!important;padding:8px 4px;border-radius:8px;border:1px solid #e7dfed;background:white;color:#43364f}
+.rm-actions{display:flex;flex-wrap:wrap;gap:6px}
+.rm-actions button{font-size:11px;padding:8px 9px;display:inline-flex;align-items:center;gap:5px}
+.rm-light{border:0;border-radius:8px;background:#eee7f8;color:#6d5194}
+.rm-list{display:flex;flex-direction:column;gap:0}
+.rm-entry{display:flex;align-items:center;gap:10px;padding:10px 3px;border-bottom:1px solid #eee9f2}
+.rm-entry>input{flex:none;width:18px;height:18px;accent-color:#8b64bd}
+.rm-main{flex:1;display:grid;gap:3px}
+.rm-main b{font-size:12px;color:#352b40}
+.rm-pin{flex:none;width:32px;height:32px;border:0;border-radius:8px;background:#f4f0f8;color:#a097ab;display:grid;place-items:center}
+.rm-pin.on{color:#885cb9;background:#eee3fb}
+.rm-empty{font-size:12px;color:#94869e;text-align:center;padding:14px}
+.rm-bottom{display:flex;align-items:center;justify-content:space-between;gap:8px;border-top:1px solid #eee9f2;padding:11px 0}
+.rm-bottom>div{display:grid;gap:2px}
+.rm-bottom b{font-size:12px}
+.rm-delete{border:0;border-radius:9px;background:#a34b74;color:white;padding:10px 12px;display:flex;align-items:center;justify-content:center;gap:5px;font-size:12px;font-weight:700}
+.rm-delete:disabled{opacity:.5}
+.rm-message{margin:0;padding:9px;border-radius:9px;background:#f2edf8;color:#65467b;font-size:11px;line-height:1.6}
+@media(max-width:370px){.rm-filters{grid-template-columns:1fr 1fr}.rm-filters select:last-child{grid-column:span 2}}
