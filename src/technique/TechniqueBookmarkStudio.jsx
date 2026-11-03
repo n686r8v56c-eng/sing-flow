@@ -52,8 +52,43 @@ function SkillSearch({skills,selectedId,onSelect,label='연결할 기술'}){
    {selectedId&&<small className="tech-muted">연결됨: {chosen?.name||'기술을 다시 선택해 줘'}</small>}
  </div>
 }
+function TrainingTechniquePicker({skills,selectedId,onSelect,onCreate}){
+ const selected=skills.find(skill=>skill.id===selectedId);
+ const [major,SetMajor]=useState(()=>selected?.category||'전체');
+ const [minor,SetMinor]=useState(()=>selected?.subcategory||'전체');
+ const [adding,SetAdding]=useState(false),[draftName,SetDraftName]=useState('');
+ const noCategory='__uncategorized__';
+ const majorOptions=[...new Set(skills.map(skill=>skill.category).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'ko'));
+ const categoryMatches=skills.filter(skill=>major==='전체'||(major===noCategory?!skill.category:skill.category===major));
+ const minorOptions=[...new Set(categoryMatches.map(skill=>skill.subcategory).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'ko'));
+ const filtered=categoryMatches.filter(skill=>minor==='전체'||(minor===noCategory?!skill.subcategory:skill.subcategory===minor));
+ const create=()=>{
+  const name=draftName.trim();
+  if(!name)return;
+  const existing=skills.find(skill=>String(skill.name||'').trim().toLocaleLowerCase()===name.toLocaleLowerCase());
+  const skillId=existing?.id||onCreate?.(name);
+  if(!skillId)return;
+  SetMajor(existing?.category||noCategory);SetMinor(existing?.subcategory||'전체');
+  onSelect(skillId);
+  SetDraftName('');SetAdding(false);
+ };
+ return <div className="tech-study-skill-picker">
+  <b>기술 연결</b>
+  <div className="tech-study-skill-filters">
+   <label>대분류<select value={major} onChange={e=>{SetMajor(e.target.value);SetMinor('전체')}}><option value="전체">전체</option><option value={noCategory}>미분류</option>{majorOptions.map(cat=><option key={cat} value={cat}>{cat}</option>)}</select></label>
+   <label>소분류<select value={minor} onChange={e=>SetMinor(e.target.value)}><option value="전체">전체</option><option value={noCategory}>미분류</option>{minorOptions.map(cat=><option key={cat} value={cat}>{cat}</option>)}</select></label>
+  </div>
+  <select aria-label="연결 기술 선택" value={filtered.some(skill=>skill.id===selectedId)?selectedId:''} onChange={e=>onSelect(e.target.value)}>
+   <option value="">기술 선택 ({filtered.length}개)</option>
+   {filtered.map(skill=><option value={skill.id} key={skill.id}>{skill.name||skill.title}</option>)}
+  </select>
+  {selected&&<small className="tech-muted">연결됨 · {selected.name||selected.title}{!selected.category?' · 미분류 (나중에 기술 탭에서 분류 가능)':''}</small>}
+  {!adding?<button type="button" className="tech-study-create-toggle" onClick={()=>SetAdding(true)}><Plus size={13}/> 원하는 기술이 없으면 이름만 등록</button>:
+  <div className="tech-study-create-row"><input aria-label="새 기술 이름" autoFocus value={draftName} onChange={e=>SetDraftName(e.target.value)} placeholder="새 기술 이름" onKeyDown={e=>{if(e.key==='Enter'){e.preventDefault();create()}}}/><button type="button" disabled={!draftName.trim()} onClick={create}>등록·연결</button><button type="button" onClick={()=>{SetAdding(false);SetDraftName('')}}>취소</button></div>}
+ </div>;
+}
 function Video({id,onReady,onPlaying}){const host=useRef(null);useEffect(()=>{if(!id){onReady(null);return}let instance,disposed=false;const mount=()=>{if(disposed||!window.YT?.Player||!host.current)return;instance=new window.YT.Player(host.current,{videoId:id,playerVars:{playsinline:1,rel:0},events:{onReady:e=>onReady(e.target),onStateChange:e=>onPlaying(e.data===1)}})};if(window.YT?.Player)mount();else{const previous=window.onYouTubeIframeAPIReady;window.onYouTubeIframeAPIReady=()=>{previous?.();mount()};if(!document.querySelector('script[src="https://www.youtube.com/iframe_api"]')){const script=document.createElement('script');script.src='https://www.youtube.com/iframe_api';document.head.appendChild(script)}}return()=>{disposed=true;onReady(null);try{instance?.destroy()}catch{}}},[id]);return id?<div className="tech-video" ref={host}/>:<div className="tech-video tech-no-video">유튜브 URL을 등록해 줘.</div>}
-export default function TechniqueBookmarkStudio({item,genres,skills,linkedTechniqueSkills=[],onSave,onAutoSave,onDelete,onEvaluate,onEvaluateLinkedTechnique,recordingLogs=[],recordingKind='technique',onSaveRecording,onDeleteRecording,songMode=false,pointMode=false,onUploadMR,onPersistMRSettings,onPlaybackSeconds,draftScope='guest'}){const draftKey='sing-flow-bookmark-draft-v2:'+draftScope+':'+recordingKind+':'+item.id;
+export default function TechniqueBookmarkStudio({item,genres,skills,linkedTechniqueSkills=[],onCreateTechnique,onSave,onAutoSave,onDelete,onEvaluate,onEvaluateLinkedTechnique,recordingLogs=[],recordingKind='technique',onSaveRecording,onDeleteRecording,songMode=false,pointMode=false,onUploadMR,onPersistMRSettings,onPlaybackSeconds,draftScope='guest'}){const draftKey='sing-flow-bookmark-draft-v2:'+draftScope+':'+recordingKind+':'+item.id;
 const restoredDraft=useRef(null);
 if(restoredDraft.current===null){
  try{const saved=JSON.parse(localStorage.getItem(draftKey)||'null');
@@ -225,11 +260,7 @@ if(pointMode){
       <input aria-label="타임마커 핵심 내용" placeholder="핵심 내용" value={mark.label||''} onChange={e=>editQuickMarker(mark.id,'label',e.target.value)}/>
       <button type="button" className="tech-quickmark-remove" aria-label="타임마커 삭제" onClick={()=>V(old=>({...old,clips:old.clips.filter(c=>c.id!==mark.id)}))}><Trash2 size={14}/></button>
      </div>
-     <label>기술 연결<select value={mark.skillId||''} onChange={e=>editQuickMarker(mark.id,'skillId',e.target.value)}>
-      <option value="">기술 선택 (선택 사항)</option>
-      {linkedTechniqueSkills.map(skill=><option key={'tech-'+skill.id} value={skill.id}>{skill.name||skill.title}</option>)}
-      {skills.filter(skill=>!linkedTechniqueSkills.some(t=>t.id===skill.id)).map(skill=><option key={'training-'+skill.id} value={skill.id}>{skill.name||skill.title}</option>)}
-     </select></label>
+     <TrainingTechniquePicker key={mark.id} skills={linkedTechniqueSkills} selectedId={mark.skillId||''} onSelect={value=>editQuickMarker(mark.id,'skillId',value)} onCreate={onCreateTechnique}/>
      <textarea aria-label={mark.start+' 타임마커 메모'} rows={2} placeholder="메모 (선택)" value={mark.memo||''} onChange={e=>editQuickMarker(mark.id,'memo',e.target.value)}/>
     </div>)}
    </section>
