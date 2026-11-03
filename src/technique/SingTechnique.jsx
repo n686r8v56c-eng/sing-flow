@@ -1,4 +1,4 @@
-import React,{useState} from 'react';
+import React,{useEffect,useState} from 'react';
 import {BookOpen,Plus,Pencil,Trash2,X,Search,Bookmark,Check} from 'lucide-react';
 import TechniquePhotos,{primaryPhoto} from './TechniquePhotos';
 import TechniqueBookmarkStudio,{videoId,normalizedClips} from './TechniqueBookmarkStudio';
@@ -11,14 +11,30 @@ import KaraokeFields from './KaraokeFields';
 const uid=()=>globalThis.crypto?.randomUUID?.()||String(Date.now()+Math.random());
 const statuses=['미습득','연습 중','습득 완료'];
 const empty=()=>({skills:[],bookmarks:[],notes:[]});
-export default function SingTechnique({value,onChange,mode='technique',recordingLogs=[],onSaveRecording,onDeleteRecording,onUploadMR,onPlaybackSeconds}){
+export default function SingTechnique({value,onChange,mode='technique',recordingLogs=[],onSaveRecording,onDeleteRecording,onUploadMR,onPlaybackSeconds,draftScope='guest'}){
  const isTraining=mode==='training',isSong=mode==='song';
  const guideMap=isTraining?trainingGuide:vocalTechniqueGuide;
  const guideCategories=isTraining?trainingGuideCategories:vocalTechniqueCategories;
  const itemLabel=isSong?'곡명':isTraining?'훈련':'기술';
  const d={...empty(),...(value||{})};
  const [sub,Sub]=useState('bookmarks'),[query,Q]=useState(''),[major,A]=useState('전체'),[minor,B]=useState('전체');
- const [modal,M]=useState(null),[guide,G]=useState(false),[linkedSkill,LinkedSkill]=useState(null);
+ const modalKey='sing-flow-open-bookmark-v2:'+draftScope+':'+mode;
+ const [modal,M]=useState(()=>{
+  try{const saved=JSON.parse(localStorage.getItem(modalKey)||'null');return saved?.type==='bookmarks'&&saved.item?.id?saved:null}catch{return null}
+ }),[guide,G]=useState(false),[linkedSkill,LinkedSkill]=useState(null);
+ useEffect(()=>{
+  try{
+   if(modal?.type==='bookmarks')localStorage.setItem(modalKey,JSON.stringify(modal));
+   else localStorage.removeItem(modalKey);
+  }catch{}
+ },[modalKey,modal]);
+ const clearBookmarkDraft=item=>{
+  if(!item?.id)return;
+  const kind=isSong?'song':isTraining?'training':'technique';
+  try{localStorage.removeItem('sing-flow-bookmark-draft-v2:'+draftScope+':'+kind+':'+item.id)}catch{}
+ };
+ const closeModal=()=>{if(modal?.type==='bookmarks')clearBookmarkDraft(modal.item);M(null)};
+
  const mutate=fn=>onChange(old=>{const next=structuredClone({...empty(),...(old||{})});fn(next);return next});
  const open=(type,item)=>{G(false);M({type,item:item?{...structuredClone(item),...(type==='bookmarks'?{_existing:true}:{})}:type==='skills'?{id:uid(),genre:VOCAL_GENRE,name:'',category:'',subcategory:'',status:'미습득',images:[],memo:''}:type==='bookmarks'?{id:uid(),genre:VOCAL_GENRE,title:'',url:'',songId:isSong?'':undefined,clips:[],skillIds:[],memo:''}:{id:uid(),genre:VOCAL_GENRE,title:'',memo:''}})};
  const change=(key,val)=>M(old=>({...old,item:{...old.item,[key]:val}}));
@@ -56,8 +72,8 @@ export default function SingTechnique({value,onChange,mode='technique',recording
  {sub==='skills'&&<div className="sing-tech-filters"><select value={major} onChange={e=>{A(e.target.value);B('전체')}}>{cats.map(x=><option key={x}>{x}</option>)}</select><select value={minor} onChange={e=>B(e.target.value)}>{subs.map(x=><option key={x}>{x}</option>)}</select></div>}
  {sub==='notes'?<TechniqueLearningNotes genre={VOCAL_GENRE} kind={itemLabel} skills={d.skills} bookmarks={d.bookmarks} notes={d.notes}/>:<div className="sing-tech-list">{rows.map(x=><div className="sing-tech-line" key={x.id}>{(sub==='skills'?primaryPhoto(x):videoId(x.url)?'https://img.youtube.com/vi/'+videoId(x.url)+'/mqdefault.jpg':'')?<img className="sing-tech-thumb" src={sub==='skills'?primaryPhoto(x):'https://img.youtube.com/vi/'+videoId(x.url)+'/mqdefault.jpg'} alt=""/>:<div className="sing-tech-thumb sing-tech-placeholder">{sub==='skills'?<BookOpen size={17}/>:<Bookmark size={17}/>}</div>}<button type="button" className="sing-tech-line-main" onClick={()=>open(sub,x)}><b>{x.name||x.title}</b><small>{sub==='skills'?[x.category,x.subcategory].filter(Boolean).join(' · '):x.memo?.slice(0,45)||x.url||'등록된 영상'}</small>{isSong&&sub==='skills'&&(x.karaoke?.tj||x.karaoke?.kumyoung)&&<small className="karaoke-numbers">{[x.karaoke.tj&&'TJ '+x.karaoke.tj,x.karaoke.kumyoung&&'금영 '+x.karaoke.kumyoung].filter(Boolean).join(' · ')}</small>}</button>{sub==='skills'&&<select aria-label="숙련도" className="sing-tech-status" value={x.status||'미습득'} onChange={e=>evaluate(x.id,e.target.value)}>{statuses.map(st=><option key={st}>{st}</option>)}</select>}{sub==='skills'&&<button type="button" className="sing-tech-related" title="이 항목에 연결된 유튜브 북마크 보기" onClick={()=>showLinkedBookmarks(x)}><Bookmark size={14}/><span>{relatedBookmarks(x.id).length}</span></button>}<button type="button" className="sing-tech-icon" aria-label="편집" onClick={()=>open(sub,x)}><Pencil size={15}/></button></div>)}</div>}
  {sub!=='notes'&&rows.length===0&&<p className="sing-tech-empty">등록된 항목이 없어.</p>}
- {modal&&<div className="sing-tech-overlay" onMouseDown={e=>{if(e.target===e.currentTarget)M(null)}}><section className="sing-tech-modal" role="dialog" aria-modal="true" aria-label={modal.type==='skills'?itemLabel:modal.type==='bookmarks'?itemLabel+' 북마크':'학습 노트'}><header className="sing-tech-modalhead"><strong>{modal.type==='skills'?itemLabel:modal.type==='bookmarks'?itemLabel+' 북마크':'학습 노트'}</strong><button type="button" className="sing-tech-icon" aria-label="닫기" onClick={()=>M(null)}><X size={19}/></button></header>
- {modal.type==='bookmarks'?<div className="sing-tech-editor-body"><TechniqueBookmarkStudio key={modal.item.id} item={modal.item} genres={[VOCAL_GENRE]} skills={d.skills} onSave={item=>saveItem('bookmarks',item)} onDelete={()=>remove('bookmarks',modal.item.id)} onEvaluate={evaluate} songMode={isSong} onUploadMR={onUploadMR} onPersistMRSettings={persistMRSettings} recordingLogs={recordingLogs} recordingKind={isSong?'song':isTraining?'training':'technique'} onSaveRecording={onSaveRecording} onDeleteRecording={onDeleteRecording} onPlaybackSeconds={onPlaybackSeconds}/></div>:<div className="sing-tech-editor-body sing-tech-form">
+ {modal&&<div className="sing-tech-overlay" onMouseDown={e=>{if(e.target===e.currentTarget)closeModal()}}><section className="sing-tech-modal" role="dialog" aria-modal="true" aria-label={modal.type==='skills'?itemLabel:modal.type==='bookmarks'?itemLabel+' 북마크':'학습 노트'}><header className="sing-tech-modalhead"><strong>{modal.type==='skills'?itemLabel:modal.type==='bookmarks'?itemLabel+' 북마크':'학습 노트'}</strong><button type="button" className="sing-tech-icon" aria-label="닫기" onClick={closeModal}><X size={19}/></button></header>
+ {modal.type==='bookmarks'?<div className="sing-tech-editor-body"><TechniqueBookmarkStudio key={modal.item.id} item={modal.item} genres={[VOCAL_GENRE]} skills={d.skills} onSave={item=>saveItem('bookmarks',item)} onDelete={()=>remove('bookmarks',modal.item.id)} onEvaluate={evaluate} songMode={isSong} onUploadMR={onUploadMR} onPersistMRSettings={persistMRSettings} recordingLogs={recordingLogs} recordingKind={isSong?'song':isTraining?'training':'technique'} onSaveRecording={onSaveRecording} onDeleteRecording={onDeleteRecording} onPlaybackSeconds={onPlaybackSeconds} draftScope={draftScope}/></div>:<div className="sing-tech-editor-body sing-tech-form">
  {modal.type==='skills'?<>
  {!isSong&&<label>장르<select value={VOCAL_GENRE} disabled><option>{VOCAL_GENRE}</option></select></label>}
  {!isSong&&input(itemLabel+' 이름','name',{required:true})}
