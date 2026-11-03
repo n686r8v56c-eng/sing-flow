@@ -40,8 +40,29 @@ function SkillSearch({skills,selectedId,onSelect,label='연결할 기술'}){
  </div>
 }
 function Video({id,onReady,onPlaying}){const host=useRef(null);useEffect(()=>{if(!id){onReady(null);return}let instance,disposed=false;const mount=()=>{if(disposed||!window.YT?.Player||!host.current)return;instance=new window.YT.Player(host.current,{videoId:id,playerVars:{playsinline:1,rel:0},events:{onReady:e=>onReady(e.target),onStateChange:e=>onPlaying(e.data===1)}})};if(window.YT?.Player)mount();else{const previous=window.onYouTubeIframeAPIReady;window.onYouTubeIframeAPIReady=()=>{previous?.();mount()};if(!document.querySelector('script[src="https://www.youtube.com/iframe_api"]')){const script=document.createElement('script');script.src='https://www.youtube.com/iframe_api';document.head.appendChild(script)}}return()=>{disposed=true;onReady(null);try{instance?.destroy()}catch{}}},[id]);return id?<div className="tech-video" ref={host}/>:<div className="tech-video tech-no-video">유튜브 URL을 등록해 줘.</div>}
-export default function TechniqueBookmarkStudio({item,genres,skills,onSave,onDelete,onEvaluate,recordingLogs=[],recordingKind='technique',onSaveRecording,onDeleteRecording,songMode=false,onUploadMR,onPersistMRSettings}){const[v,V]=useState(()=>({...item,clips:normalizedClips(item)})),[mode,M]=useState(item._existing?'practice':'edit'),[index,I]=useState(0),[repeat,R]=useState(true),[playing,P]=useState(false),[time,T]=useState(0),[videoDuration,VideoDuration]=useState(0),[zoom,Z]=useState(false),[status,S]=useState(''),[note,N]=useState(''),[ready,Q]=useState(false),[mrReady,MRReady]=useState(false),[source,Source]=useState('youtube'),[mrFile,MRFile]=useState(null),[mrBusy,MRBusy]=useState(false),[mrUrl,MRUrl]=useState(''),[mrError,MRError]=useState('');
-const player=useRef(null),mrPlayer=useRef(null),edited=useRef(Boolean(item.title)),clip=v.clips[index],id=videoId(v.url),current=skills.filter(s=>s.genre===v.genre),[titleLoading,TL]=useState(false),[titleNotice,TN]=useState('');
+export default function TechniqueBookmarkStudio({item,genres,skills,onSave,onDelete,onEvaluate,recordingLogs=[],recordingKind='technique',onSaveRecording,onDeleteRecording,songMode=false,onUploadMR,onPersistMRSettings,onPlaybackSeconds}){const[v,V]=useState(()=>({...item,clips:normalizedClips(item)})),[mode,M]=useState(item._existing?'practice':'edit'),[index,I]=useState(0),[repeat,R]=useState(true),[playing,P]=useState(false),[time,T]=useState(0),[videoDuration,VideoDuration]=useState(0),[zoom,Z]=useState(false),[status,S]=useState(''),[note,N]=useState(''),[ready,Q]=useState(false),[mrReady,MRReady]=useState(false),[source,Source]=useState('youtube'),[mrFile,MRFile]=useState(null),[mrBusy,MRBusy]=useState(false),[mrUrl,MRUrl]=useState(''),[mrError,MRError]=useState('');
+const player=useRef(null),mrPlayer=useRef(null),playbackPending=useRef(0),playbackCallback=useRef(onPlaybackSeconds),playbackActive=useRef(false),edited=useRef(Boolean(item.title)),clip=v.clips[index],id=videoId(v.url),current=skills.filter(s=>s.genre===v.genre),[titleLoading,TL]=useState(false),[titleNotice,TN]=useState('');
+playbackCallback.current=onPlaybackSeconds;
+const flushPlayback=()=>{
+ const amount=playbackPending.current;
+ if(amount>0){playbackPending.current=0;playbackCallback.current?.(amount,recordingKind)}
+};
+useEffect(()=>{
+ // Count real foreground playing time, not the length of a video or recording logs.
+ if(songMode||!onPlaybackSeconds)return;
+ let previous=performance.now();
+ const timer=setInterval(()=>{
+  const now=performance.now();
+  const elapsed=Math.min(Math.max((now-previous)/1000,0),1.5);
+  previous=now;
+  let active=false;
+  try{active=mode==='practice'&&document.visibilityState==='visible'&&ready&&id&&player.current?.getPlayerState?.()===1}catch{}
+  if(active)playbackPending.current+=elapsed;
+  if(playbackPending.current>=5||(!active&&playbackActive.current))flushPlayback();
+  playbackActive.current=Boolean(active);
+ },1000);
+ return()=>{clearInterval(timer);flushPlayback();playbackActive.current=false};
+},[songMode,mode,ready,id,recordingKind]);
 const change=(k,value)=>{if(k==='title')edited.current=true;if(k==='url'){edited.current=false;TN('')}V(x=>({...x,[k]:value}))};
 const update=(k,value)=>V(x=>({...x,clips:x.clips.map((c,i)=>i===index?{...c,[k]:value,...((k==='start'||k==='end')?{fullVideo:false}:{})}:c)}));
 const seek=(value)=>{const n=sec(value);if(!Number.isFinite(n))return;if(songMode&&source==='mr'){mrPlayer.current?.playFrom(n);return}if(player.current){player.current.seekTo(n,true);player.current.playVideo()}};
