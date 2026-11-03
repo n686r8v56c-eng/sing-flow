@@ -309,3 +309,5 @@
 .sing-tech .tech-training-practice-record{display:grid;gap:9px;min-width:0}
 .sing-tech .tech-training-practice-record .sing-voice-recordings{min-width:0}
 .sing-tech .tech-training-single .tech-bookmark-save{width:100%;margin-top:10px}
+
+.sing-tech .tech-training-timeline[hidden]{display:none}
