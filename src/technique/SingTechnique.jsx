@@ -3,13 +3,14 @@ import {BookOpen,Plus,Pencil,Trash2,X,Search,Bookmark,Check} from 'lucide-react'
 import TechniquePhotos,{primaryPhoto} from './TechniquePhotos';
 import TechniqueBookmarkStudio,{videoId,normalizedClips} from './TechniqueBookmarkStudio';
 import TechniqueLearningNotes from './TechniqueLearningNotes';
+import VoiceRecordingLog from './VoiceRecordingLog';
 import {VOCAL_GENRE,vocalTechniqueGuide,vocalTechniqueCategories} from './vocalGuide';
 import {trainingGuide,trainingGuideCategories} from '../trainingGuide';
 import './sing-technique.css';
 const uid=()=>globalThis.crypto?.randomUUID?.()||String(Date.now()+Math.random());
 const statuses=['미습득','연습 중','습득 완료'];
 const empty=()=>({skills:[],bookmarks:[],notes:[]});
-export default function SingTechnique({value,onChange,mode='technique'}){
+export default function SingTechnique({value,onChange,mode='technique',recordingLogs=[],onSaveRecording,onDeleteRecording}){
  const isTraining=mode==='training';
  const guideMap=isTraining?trainingGuide:vocalTechniqueGuide;
  const guideCategories=isTraining?trainingGuideCategories:vocalTechniqueCategories;
@@ -35,7 +36,7 @@ export default function SingTechnique({value,onChange,mode='technique'}){
  {sub==='notes'?<TechniqueLearningNotes genre={VOCAL_GENRE} skills={d.skills} bookmarks={d.bookmarks} notes={d.notes}/>:<div className="sing-tech-list">{rows.map(x=><div className="sing-tech-line" key={x.id}>{(sub==='skills'?primaryPhoto(x):videoId(x.url)?'https://img.youtube.com/vi/'+videoId(x.url)+'/mqdefault.jpg':'')?<img className="sing-tech-thumb" src={sub==='skills'?primaryPhoto(x):'https://img.youtube.com/vi/'+videoId(x.url)+'/mqdefault.jpg'} alt=""/>:<div className="sing-tech-thumb sing-tech-placeholder">{sub==='skills'?<BookOpen size={17}/>:<Bookmark size={17}/>}</div>}<button type="button" className="sing-tech-line-main" onClick={()=>open(sub,x)}><b>{x.name||x.title}</b><small>{sub==='skills'?[x.category,x.subcategory].filter(Boolean).join(' · '):x.memo?.slice(0,45)||x.url||'등록된 영상'}</small></button>{sub==='skills'&&<select aria-label="숙련도" className="sing-tech-status" value={x.status||'미습득'} onChange={e=>evaluate(x.id,e.target.value)}>{statuses.map(st=><option key={st}>{st}</option>)}</select>}<button type="button" className="sing-tech-icon" aria-label="편집" onClick={()=>open(sub,x)}><Pencil size={15}/></button></div>)}</div>}
  {sub!=='notes'&&rows.length===0&&<p className="sing-tech-empty">등록된 항목이 없어.</p>}
  {modal&&<div className="sing-tech-overlay" onMouseDown={e=>{if(e.target===e.currentTarget)M(null)}}><section className="sing-tech-modal" role="dialog" aria-modal="true" aria-label={modal.type==='skills'?itemLabel:modal.type==='bookmarks'?itemLabel+' 북마크':'학습 노트'}><header className="sing-tech-modalhead"><strong>{modal.type==='skills'?itemLabel:modal.type==='bookmarks'?itemLabel+' 북마크':'학습 노트'}</strong><button type="button" className="sing-tech-icon" aria-label="닫기" onClick={()=>M(null)}><X size={19}/></button></header>
- {modal.type==='bookmarks'?<div className="sing-tech-editor-body"><TechniqueBookmarkStudio key={modal.item.id} item={modal.item} genres={[VOCAL_GENRE]} skills={d.skills} onSave={item=>saveItem('bookmarks',item)} onDelete={()=>remove('bookmarks',modal.item.id)} onEvaluate={evaluate}/></div>:<div className="sing-tech-editor-body sing-tech-form">
+ {modal.type==='bookmarks'?<div className="sing-tech-editor-body"><TechniqueBookmarkStudio key={modal.item.id} item={modal.item} genres={[VOCAL_GENRE]} skills={d.skills} onSave={item=>saveItem('bookmarks',item)} onDelete={()=>remove('bookmarks',modal.item.id)} onEvaluate={evaluate} recordingLogs={recordingLogs} recordingKind={isTraining?'training':'technique'} onSaveRecording={onSaveRecording} onDeleteRecording={onDeleteRecording}/></div>:<div className="sing-tech-editor-body sing-tech-form">
  {modal.type==='skills'?<>
  <label>장르<select value={VOCAL_GENRE} disabled><option>{VOCAL_GENRE}</option></select></label>
  {input(itemLabel+' 이름','name',{required:true})}
@@ -46,7 +47,7 @@ export default function SingTechnique({value,onChange,mode='technique'}){
  {clipCautions.length>0&&<div className="sing-tech-history"><strong>이 {itemLabel}의 주의할 점</strong>{clipCautions.map((c,i)=><div key={c.id||i}><small>{c.title} · {c.start}–{c.end}</small><p>{c.text}</p></div>)}</div>}
  {modal.item.lastEvaluatedAt&&<small className="sing-tech-muted">마지막 평가: {new Date(modal.item.lastEvaluatedAt).toLocaleDateString('ko-KR')} · 평가 이력 {(modal.item.statusHistory||[]).length}건</small>}
  <label>숙련도<select value={modal.item.status||'미습득'} onChange={e=>change('status',e.target.value)}>{statuses.map(x=><option key={x}>{x}</option>)}</select></label>
- {(modal.item.statusHistory||[]).length>0&&<div className="sing-tech-history"><strong>이 {itemLabel}의 평가·연습 메모</strong>{[...modal.item.statusHistory].reverse().map((h,i)=><div key={h.id||i}><small>{h.at?new Date(h.at).toLocaleDateString('ko-KR'):''} · {h.status||''} · {h.source||''}</small>{h.note&&<p>{h.note}</p>}</div>)}</div>}
+ {d.skills.some(x=>x.id===modal.item.id)&&<VoiceRecordingLog kind={isTraining?'training':'technique'} skillId={modal.item.id} logs={recordingLogs} onSave={onSaveRecording} onDelete={onDeleteRecording}/>}
  </>:<>{input('제목','title',{required:true})}<label>메모<textarea value={modal.item.memo||''} onChange={e=>change('memo',e.target.value)}/></label></>}
  <div className="sing-tech-formbuttons"><button type="button" className="sing-tech-primary" onClick={()=>saveItem(modal.type,modal.item)}><Check size={16}/> 저장</button>{d[modal.type].some(x=>x.id===modal.item.id)&&<button type="button" className="sing-tech-delete" onClick={()=>remove(modal.type,modal.item.id)}><Trash2 size={15}/> 삭제</button>}</div>
  </div>}</section></div>}
