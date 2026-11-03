@@ -1,7 +1,7 @@
 import React,{useEffect,useState} from 'react';
 import {BookOpen,Plus,Pencil,Trash2,X,Search,Bookmark,Check} from 'lucide-react';
 import TechniquePhotos,{primaryPhoto} from './TechniquePhotos';
-import TechniqueBookmarkStudio,{videoId,normalizedClips} from './TechniqueBookmarkStudio';
+import TechniqueBookmarkStudio,{videoId,normalizedClips,parseChapterLines} from './TechniqueBookmarkStudio';
 import TechniqueLearningNotes from './TechniqueLearningNotes';
 import VoiceRecordingLog from './VoiceRecordingLog';
 import {VOCAL_GENRE,vocalTechniqueGuide,vocalTechniqueCategories} from './vocalGuide';
@@ -18,6 +18,7 @@ export default function SingTechnique({value,onChange,mode='technique',recording
  const itemLabel=isSong?'곡명':isTraining?'훈련':'기술';
  const d={...empty(),...(value||{})};
  const [sub,Sub]=useState('bookmarks'),[query,Q]=useState(''),[major,A]=useState('전체'),[minor,B]=useState('전체');
+ const [quickPaste,QuickPaste]=useState(''),[quickPasteNotice,QuickPasteNotice]=useState(''),[quickPasteBusy,QuickPasteBusy]=useState(false);
  const modalKey='sing-flow-open-bookmark-v2:'+draftScope+':'+mode;
  const [modal,M]=useState(()=>{
   try{const saved=JSON.parse(localStorage.getItem(modalKey)||'null');return saved?.type==='bookmarks'&&saved.item?.id?saved:null}catch{return null}
@@ -51,6 +52,34 @@ export default function SingTechnique({value,onChange,mode='technique',recording
    else list.push(cleaned);
   });
  };
+ const importVideoAndMarkers=()=>{
+  if(quickPasteBusy)return;
+  const lines=quickPaste.split(/\r?\n/).map(x=>x.trim()).filter(Boolean);
+  const urlLines=lines.filter(x=>/^https?:\/\/\S+$/i.test(x)&&videoId(x));
+  if(urlLines.length!==1)return QuickPasteNotice('유효한 유튜브 URL을 한 줄에 하나만 넣어 줘.');
+  const url=urlLines[0],id=videoId(url);
+  const other=lines.filter(x=>x!==url);
+  const {entries,invalid}=parseChapterLines(other.join('\n'));
+  if(invalid.length)return QuickPasteNotice('목차 형식 오류: '+invalid.join(', ')+'번째 항목 · 예시: 04:03 복압 잡는 법');
+  if(!entries.length)return QuickPasteNotice('유튜브 URL 아래에 타임스탬프 목차를 넣어 줘.');
+  if(entries.some((e,i)=>i>0&&e.start<=entries[i-1].start))return QuickPasteNotice('타임스탬프는 위에서 아래로 시간순으로 넣어 줘.');
+  if(d.bookmarks.some(b=>videoId(b.url)===id)){
+   if(!confirm('이 영상 URL로 등록된 북마크가 이미 있어. 기존 북마크는 그대로 두고 새 북마크를 따로 만들까?'))return;
+  }
+  const bookmarkId=uid(),fallbackTitle='유튜브 영상 · '+id;
+  const clips=entries.map(e=>({id:uid(),skillId:'',label:e.label,start:String(Math.floor(e.start/60)).padStart(2,'0')+':'+String(e.start%60).padStart(2,'0'),end:String(Math.floor((e.start+1)/60)).padStart(2,'0')+':'+String((e.start+1)%60).padStart(2,'0'),caution:'',memo:'',quickMarked:true,chapterImported:true}));
+  mutate(state=>{state.bookmarks.push({id:bookmarkId,genre:VOCAL_GENRE,title:fallbackTitle,url,clips,skillIds:[],memo:''})});
+  QuickPaste('');QuickPasteNotice('새 영상 북마크 1개와 타임마커 '+clips.length+'개를 등록했어.');
+  LinkedSkill(null);Q('');Sub('bookmarks');
+  // Title lookup is best-effort: the bookmark is saved even if YouTube metadata fails.
+  const controller=new AbortController();
+  const timer=setTimeout(()=>controller.abort(),5000);
+  fetch('https://noembed.com/embed?url='+encodeURIComponent('https://www.youtube.com/watch?v='+id),{signal:controller.signal})
+   .then(r=>r.json()).then(meta=>{
+    if(typeof meta.title!=='string'||!meta.title.trim()||meta.error)return;
+    mutate(state=>{const b=state.bookmarks.find(x=>x.id===bookmarkId);if(b&&b.title===fallbackTitle)b.title=meta.title.trim()});
+   }).catch(()=>{}).finally(()=>clearTimeout(timer));
+ };
  const evaluate=(id,status,note='',bookmarkId='')=>{mutate(state=>{const s=state.skills.find(x=>x.id===id);if(!s)return;const at=new Date().toISOString();s.status=status;s.lastEvaluatedAt=at;s.statusHistory=[...(s.statusHistory||[]),{id:uid(),at,status,note,source:bookmarkId?'유튜브 북마크':itemLabel+' 라이브러리',bookmarkId:bookmarkId||null}]})};
  const persistMRSettings=(bookmarkId,mrSettings)=>{if(!isSong)return;mutate(state=>{const b=state.bookmarks.find(x=>x.id===bookmarkId);if(b)b.mrSettings=mrSettings})};
  const remove=(type,id)=>{if(!confirm('삭제할까요?'))return;if(type==='bookmarks')clearBookmarkDraft({id});mutate(state=>{state[type]=state[type].filter(x=>x.id!==id)});M(null)};
@@ -79,6 +108,12 @@ export default function SingTechnique({value,onChange,mode='technique',recording
  return <div className="sing-tech">
  <div className="sing-tech-subtabs">{[['skills',itemLabel],['bookmarks','북마크 ('+d.bookmarks.length+')'],['notes',isSong?'학습 메모':'학습 노트']].map(([key,label])=><button type="button" key={key} className={sub===key?'on':''} onClick={()=>{Sub(key);Q('');if(key!=='bookmarks')LinkedSkill(null)}}>{label}</button>)}</div>
  <div className="sing-tech-heading"><h2>{sub==='skills'?itemLabel+' 라이브러리':sub==='bookmarks'?'영상 북마크':isSong?'학습 메모':'학습 노트'}</h2><button type="button" className="sing-tech-primary" onClick={()=>open(sub)}><Plus size={15}/> 추가</button></div>
+ {sub==='bookmarks'&&isTraining&&<div className="sing-quick-import">
+ <label htmlFor="sing-quick-import-text"><b>URL + 타임스탬프 한 번에 등록</b></label>
+ <textarea id="sing-quick-import-text" rows={5} value={quickPaste} onChange={e=>{QuickPaste(e.target.value);QuickPasteNotice('')}} placeholder={'https://www.youtube.com/watch?v=XXXXXXXXXXX\n00:00 도입\n01:03 배에 힘을 주는 방법\n04:03 복압 잡는 법'} />
+ <div className="sing-quick-import-actions"><small>유튜브 주소 1줄 + 목차 여러 줄 → 새 영상 북마크와 타임마커 자동 생성</small><button type="button" className="sing-tech-primary" onClick={importVideoAndMarkers} disabled={!quickPaste.trim()||quickPasteBusy}><Plus size={14}/> 한 번에 등록</button></div>
+ {quickPasteNotice&&<small className="sing-quick-import-status" role="status">{quickPasteNotice}</small>}
+ </div>}
  {sub==='bookmarks'&&linkedSkill&&<div className="sing-tech-linked-filter"><span><Bookmark size={13}/> {d.skills.find(s=>s.id===linkedSkill)?.name||'선택한 항목'} · 연결 북마크 {relatedBookmarks(linkedSkill).length}개</span><button type="button" onClick={()=>{LinkedSkill(null);Q('')}}>전체 보기 ×</button></div>}
  {sub!=='notes'&&<div className="sing-tech-search"><Search size={15}/><input value={query} onChange={e=>Q(e.target.value)} placeholder={sub==='bookmarks'?'영상 제목·연결 기술·분류·메모 검색':'제목·분류·메모 검색'}/></div>}
  {sub==='skills'&&<div className="sing-tech-filters"><select value={major} onChange={e=>{A(e.target.value);B('전체')}}>{cats.map(x=><option key={x}>{x}</option>)}</select><select value={minor} onChange={e=>B(e.target.value)}>{subs.map(x=><option key={x}>{x}</option>)}</select></div>}
