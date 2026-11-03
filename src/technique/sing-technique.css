@@ -242,3 +242,6 @@
 .sing-tech .mr-segment-caution b{color:#714d96}
 .sing-tech .mr-recording-panel{margin:8px 0 12px}
 .sing-tech .mr-recording-panel>b{font-size:12px}
+
+/* Quick whole-video clip in YouTube edit mode */
+.sing-tech .tech-full-clip{display:flex;justify-content:center;align-items:center;width:100%;min-height:36px;margin:7px 0;background:#ebe1f7;color:#6f4898;border-radius:9px;font-size:12px!important;font-weight:700}
