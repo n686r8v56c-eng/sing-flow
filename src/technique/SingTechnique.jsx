@@ -107,7 +107,7 @@ export default function SingTechnique({value,onChange,mode='technique',recording
  const input=(label,key,props={})=><label>{label}<input {...props} value={modal.item[key]||''} onChange={e=>change(key,e.target.value)}/></label>;
  const clipCautions=modal?.type==='skills'?d.bookmarks.flatMap(b=>normalizedClips(b).filter(c=>c.skillId===modal.item.id&&c.caution?.trim()).map(c=>({id:c.id,bid:b.id,title:b.title||'영상 북마크',start:c.start,end:c.end,text:c.caution}))):[];
  return <div className="sing-tech">
- <div className="sing-tech-subtabs">{[['skills',itemLabel],['bookmarks','북마크 ('+d.bookmarks.length+')'],['notes',isSong?'학습 메모':'학습 노트']].map(([key,label])=><button type="button" key={key} className={sub===key?'on':''} onClick={()=>{Sub(key);Q('');if(key!=='bookmarks')LinkedSkill(null)}}>{label}</button>)}</div>
+ <div className="sing-tech-subtabs">{[['bookmarks','북마크 ('+d.bookmarks.length+')'],['skills',itemLabel],['notes',isSong?'학습 메모':'학습 노트']].map(([key,label])=><button type="button" key={key} className={sub===key?'on':''} onClick={()=>{Sub(key);Q('');if(key!=='bookmarks')LinkedSkill(null)}}>{label}</button>)}</div>
  <div className="sing-tech-heading"><h2>{sub==='skills'?itemLabel+' 라이브러리':sub==='bookmarks'?'영상 북마크':isSong?'학습 메모':'학습 노트'}</h2><button type="button" className="sing-tech-primary" onClick={()=>open(sub)}><Plus size={15}/> 추가</button></div>
  {sub==='bookmarks'&&isTraining&&<div className="sing-quick-import">
  <label htmlFor="sing-quick-import-text"><b>타임스탬프 일괄 등록 · URL 선택</b></label>
