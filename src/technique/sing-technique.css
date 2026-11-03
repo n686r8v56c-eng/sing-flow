@@ -1,0 +1,110 @@
+/* Sing Flow technique studio: scoped port of Expression Studio, iPhone first */
+.sing-tech,.sing-tech *{box-sizing:border-box;min-width:0}
+.sing-tech{width:100%;max-width:100%;color:#292430}
+.sing-tech button{cursor:pointer;font:inherit;border:0}
+.sing-tech input,.sing-tech select,.sing-tech textarea{box-sizing:border-box;border:1px solid #e7dfed;border-radius:9px;background:white;padding:9px 10px;width:100%;max-width:100%;min-width:0;outline-color:#b6a0dc;font-size:16px!important;color:#292430}
+.sing-tech textarea{min-height:85px;resize:vertical}
+.sing-tech label{display:grid;gap:5px;font-size:11px;color:#887c93;font-weight:650}
+.sing-tech-subtabs{display:flex;gap:3px;background:#f1eafa;border-radius:10px;padding:3px;margin-bottom:13px}
+.sing-tech-subtabs button{flex:1;padding:9px 3px;border-radius:8px;background:transparent;color:#836c9e;font-size:12px}
+.sing-tech-subtabs button.on{background:white;color:#704ca8;font-weight:750;box-shadow:0 1px 3px #38254a12}
+.sing-tech-heading{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:12px}
+.sing-tech-heading h2{font-size:17px;margin:0}
+.sing-tech-primary{display:inline-flex;align-items:center;justify-content:center;gap:6px;border-radius:9px;background:#8565b6;color:white!important;font-size:12px!important;font-weight:700;padding:9px 12px;min-height:33px}
+.sing-tech-search{display:flex;align-items:center;gap:6px;background:white;border:1px solid #e7dfed;border-radius:9px;padding:0 9px;color:#91819e;margin-bottom:9px}
+.sing-tech-search input{border:0;padding:9px 2px;font-size:16px!important}
+.sing-tech-filters{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin-bottom:10px}
+.sing-tech-list{background:white;border:1px solid #ece5f2;border-radius:11px;overflow:hidden}
+.sing-tech-line{display:flex;align-items:center;gap:7px;padding:7px 8px;min-height:51px;border-bottom:1px solid #f0ebf4}
+.sing-tech-line:last-child{border:0}
+.sing-tech-thumb{flex:none;width:38px;height:38px;object-fit:cover;border-radius:7px}
+.sing-tech-placeholder{display:grid;place-items:center;background:#f3eef9;color:#9d88ba}
+.sing-tech-line-main{flex:1;display:grid;gap:4px;text-align:left;background:none;overflow:hidden}
+.sing-tech-line-main b{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sing-tech-line-main small{font-size:10px;color:#90839b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sing-tech-status{flex:none;width:94px!important;min-width:0!important;padding:6px 3px!important;border-radius:7px;font-size:16px!important;color:#75549b!important;background:#f7f2fb!important}
+.sing-tech-icon{display:inline-flex;align-items:center;justify-content:center;padding:6px;color:#7e62aa;background:none;flex:none}
+.sing-tech-empty{text-align:center;font-size:12px;color:#92849e;padding:14px}
+.sing-tech-overlay{position:fixed;inset:0;z-index:80;display:flex;align-items:flex-end;justify-content:center;background:#1e13264c;overflow:hidden;padding:0;width:100%;max-width:100vw}
+.sing-tech-modal{width:100%;max-width:560px;min-width:0;max-height:min(91dvh,850px);display:flex;flex-direction:column;background:white;border-radius:17px 17px 0 0;overflow:hidden;box-shadow:0 -8px 45px #26133328}
+.sing-tech-modalhead{display:flex;justify-content:space-between;align-items:center;flex:none;height:50px;padding:0 14px;border-bottom:1px solid #f0edf3}
+.sing-tech-modalhead strong{font-size:15px}
+.sing-tech-editor-body{padding:14px 14px max(22px,env(safe-area-inset-bottom));overflow-y:auto;overscroll-behavior:contain;min-width:0}
+.sing-tech-form{display:flex;flex-direction:column;gap:12px}
+.sing-tech-form input,.sing-tech-form select{min-height:42px}
+.sing-tech-guide-head{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.sing-tech-guide-head b{font-size:12px}
+.sing-tech-light,.sing-tech-delete{display:inline-flex;align-items:center;justify-content:center;gap:5px;border-radius:8px;background:#eee8f5;color:#7654a1;font-size:12px!important;padding:7px 10px}
+.sing-tech-guide{padding:11px;border:1px solid #e6dbef;background:#f8f4fc;border-radius:10px;max-height:300px;overflow-y:auto}
+.sing-tech-guide p{font-size:12px;color:#887895}
+.sing-tech-guide>div{margin:10px 0}
+.sing-tech-guide strong{font-size:12px}
+.sing-tech-chips{display:flex;gap:5px;flex-wrap:wrap;margin-top:6px}
+.sing-tech-chips button{padding:6px 9px;border:1px solid #e1d7ec;background:white;border-radius:7px;font-size:11px!important}
+.sing-tech-two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.sing-tech-history{display:flex;flex-direction:column;gap:11px;background:#f7f4fa;border-radius:12px;padding:13px 12px}
+.sing-tech-history strong{font-size:13px}
+.sing-tech-history small,.sing-tech-muted{font-size:11px;color:#9a8ba6}
+.sing-tech-history p{font-size:12px;white-space:pre-wrap;overflow-wrap:anywhere;margin:5px 0 0}
+.sing-tech-formbuttons{display:flex;flex-direction:column;gap:8px}
+.sing-tech-formbuttons>.sing-tech-primary{width:100%;min-height:42px;font-size:14px!important}
+.sing-tech-formbuttons>.sing-tech-delete{background:transparent;width:100%}
+/* Photo gallery transferred from Expression Studio */
+.sing-tech .tech-photos{display:grid;gap:8px;max-width:100%}
+.sing-tech .tech-photo-header,.sing-tech .tech-clip-head,.sing-tech .tech-note-head{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.sing-tech .tech-photo-header strong,.sing-tech .tech-clip-head b,.sing-tech .tech-note-head b{font-size:13px}
+.sing-tech .tech-photo-upload{display:inline-flex;align-items:center;gap:4px;cursor:pointer;background:#eee8f5;border-radius:8px;color:#7654a1;padding:7px 9px;font-size:12px}
+.sing-tech .tech-photo-gallery{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+.sing-tech .tech-photo-card{position:relative;aspect-ratio:1;border-radius:9px;overflow:hidden;background:#f3eef8}
+.sing-tech .tech-photo-card img{width:100%;height:100%;object-fit:cover}
+.sing-tech .tech-photo-actions{position:absolute;bottom:3px;right:3px;display:flex;gap:3px}
+.sing-tech .tech-photo-actions button{display:grid;place-items:center;padding:5px;border-radius:6px;background:#fffefaed;color:#67517c}
+.sing-tech .tech-photo-actions button.chosen{background:white;color:#8c61b5}
+.sing-tech .tech-muted{font-size:11px;color:#9586a3;line-height:1.4}
+/* Bookmark editor and practice modes transferred from Expression Studio / Dance Flow */
+.sing-tech .tech-bookmark{display:flex;flex-direction:column;gap:10px;min-width:0}
+.sing-tech .tech-modes{display:flex;gap:4px;background:#eee8f4;border-radius:9px;padding:4px}
+.sing-tech .tech-modes button{flex:1;padding:9px;border-radius:7px;background:transparent;font-size:12px!important}
+.sing-tech .tech-modes button.selected{background:white;color:#7552a7;font-weight:700}
+.sing-tech .tech-video-shell{width:100%;aspect-ratio:16/9;background:#191720;border-radius:9px;overflow:hidden;position:relative}
+.sing-tech .tech-video{width:100%;height:100%;border-radius:9px;overflow:hidden}
+.sing-tech .tech-video iframe{width:100%!important;height:100%!important;border:0!important}
+.sing-tech .tech-video-shell.zoom .tech-video iframe{transform:scale(1.45);transform-origin:center}
+.sing-tech .tech-no-video{display:grid;place-items:center;color:white;font-size:12px}
+.sing-tech .tech-caution{position:absolute;z-index:2;top:9px;left:9px;right:9px;bottom:auto;background:#171222df;color:white;padding:9px;border-radius:9px;pointer-events:none;white-space:pre-wrap;overflow-wrap:anywhere;font-size:12px}
+.sing-tech .tech-zoom-bar{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:10px;margin-top:-3px}
+.sing-tech .tech-zoom-bar button{background:#eee8f5;border-radius:7px;padding:7px 13px;color:#7252a2;font-size:12px!important;font-weight:650}
+.sing-tech .tech-zoom-bar small{font-size:10px;color:#91859e}
+.sing-tech .tech-clip-head b{font-size:12px}
+.sing-tech .tech-clip-head button{display:inline-flex;align-items:center;gap:5px;background:#eee7f6;color:#7654a1;border-radius:7px;padding:7px;font-size:11px!important}
+.sing-tech .tech-clip-tabs{display:flex;gap:6px;max-width:100%;overflow-x:auto;padding-bottom:4px}
+.sing-tech .tech-clip-tabs button{display:flex;flex-direction:column;gap:3px;flex:none;border:1px solid #eee7f5;background:#faf8fc;border-radius:8px;padding:7px;font-size:11px!important}
+.sing-tech .tech-clip-tabs button.selected{background:#e5d7f4;color:#65409a}
+.sing-tech .tech-clip-tabs small{font-size:10px;color:#9a8ca6}
+.sing-tech .tech-fields{display:flex;flex-direction:column;gap:9px;min-width:0;padding:0;background:none;border:0}
+.sing-tech .tech-fields label{display:grid;gap:5px;font-size:11px;color:#857592}
+.sing-tech .tech-fields .two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+.sing-tech .tech-fields .secondary{display:inline-flex;align-items:center;justify-content:center;gap:5px;border:0;background:#eee8f5;border-radius:7px;color:#7856a3;font-size:11px!important;padding:7px}
+.sing-tech .tech-fields>button.secondary{background:transparent;color:#a55c86}
+.sing-tech .tech-bookmark-save{width:100%;min-height:40px;background:#8565b6;color:white;font-weight:650;border-radius:9px;padding:11px}
+.sing-tech .tech-bookmark>.secondary:last-child{background:transparent;border:0;color:#7654a1}
+.sing-tech .tech-history{padding:8px;border-radius:8px;background:#f7f3fa}
+.sing-tech .tech-history small{font-size:11px;color:#91819e}
+.sing-tech .tech-history p{font-size:12px;margin:5px 0;white-space:pre-wrap}
+.sing-tech .tech-external{display:inline-flex;align-items:center;gap:5px;color:#78569e;font-size:12px}
+/* Automatically aggregated learning notes */
+.sing-tech .tech-note-filters{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin:6px 0 9px}
+.sing-tech .tech-note-head{margin:12px 0 8px}
+.sing-tech .tech-note-head button{display:inline-flex;align-items:center;gap:5px;border-radius:8px;background:#eee8f5;color:#7252a2;font-size:12px!important;padding:7px}
+.sing-tech .tech-note-entry{display:flex;gap:10px;padding:10px 3px;border-bottom:1px solid #eee7f4;background:white}
+.sing-tech .tech-note-entry>img{width:49px;height:49px;border-radius:7px;object-fit:cover;flex:none}
+.sing-tech .tech-note-body{min-width:0;flex:1}
+.sing-tech .tech-note-body>b{display:block;font-size:13px}
+.sing-tech .tech-note-body>small{display:block;font-size:11px;color:#91839a;margin-top:3px}
+.sing-tech .tech-note-copy{display:flex;align-items:flex-start;justify-content:space-between;gap:7px}
+.sing-tech .tech-note-copy p{flex:1;min-width:0;margin:7px 0;font-size:12px;white-space:pre-wrap;overflow-wrap:anywhere}
+.sing-tech .tech-note-copy button{flex:none;margin-top:6px;padding:6px;background:#eee8f5;color:#7856a3;border-radius:6px;font-size:11px!important}
+.sing-tech .tech-notes>.search{display:flex;border:1px solid #e7dfed;background:white;border-radius:9px;padding:0;margin-bottom:8px}
+.sing-tech .tech-notes>.search input{border:0}
+@media(min-width:750px){.sing-tech-overlay{align-items:center;padding:20px}.sing-tech-modal{border-radius:15px;max-height:86dvh}}
+@media(max-width:390px){.sing-tech-thumb{width:32px;height:32px}.sing-tech-line{gap:5px;padding:7px 5px}.sing-tech-status{width:84px!important}}
