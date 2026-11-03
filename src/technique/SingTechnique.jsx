@@ -27,13 +27,23 @@ export default function SingTechnique({value,onChange,mode='technique',recording
  const persistMRSettings=(bookmarkId,mrSettings)=>{if(!isSong)return;mutate(state=>{const b=state.bookmarks.find(x=>x.id===bookmarkId);if(b)b.mrSettings=mrSettings})};
  const remove=(type,id)=>{if(!confirm('삭제할까요?'))return;mutate(state=>{state[type]=state[type].filter(x=>x.id!==id)});M(null)};
  const cats=['전체',...new Set(d.skills.map(s=>s.category).filter(Boolean))],subs=['전체',...new Set(d.skills.filter(s=>major==='전체'||s.category===major).map(s=>s.subcategory).filter(Boolean))];
- const rows=(d[sub]||[]).filter(s=>(sub!=='skills'||(major==='전체'||s.category===major)&&(minor==='전체'||s.subcategory===minor))&&[s.name,s.title,s.category,s.subcategory,s.memo,...Object.values(s.karaoke||{})].join(' ').toLowerCase().includes(query.toLowerCase()));
+ const bookmarkLinkedText=bookmark=>{
+  const clips=normalizedClips(bookmark);
+  const linkedIds=new Set([...(bookmark.skillIds||[]),bookmark.songId,...clips.map(c=>c.skillId)].filter(Boolean));
+  const linked=d.skills.filter(skill=>linkedIds.has(skill.id));
+  return [...linked.flatMap(skill=>[skill.name,skill.title,skill.category,skill.subcategory]),...clips.flatMap(clip=>[clip.label,clip.caution,clip.memo])];
+ };
+ const rows=(d[sub]||[]).filter(item=>{
+  if(sub==='skills'&&!((major==='전체'||item.category===major)&&(minor==='전체'||item.subcategory===minor)))return false;
+  const search=[item.name,item.title,item.url,item.category,item.subcategory,item.memo,...Object.values(item.karaoke||{}),...(sub==='bookmarks'?bookmarkLinkedText(item):[])].filter(Boolean).join(' ').toLocaleLowerCase();
+  return search.includes(query.trim().toLocaleLowerCase());
+ });
  const input=(label,key,props={})=><label>{label}<input {...props} value={modal.item[key]||''} onChange={e=>change(key,e.target.value)}/></label>;
  const clipCautions=modal?.type==='skills'?d.bookmarks.flatMap(b=>normalizedClips(b).filter(c=>c.skillId===modal.item.id&&c.caution?.trim()).map(c=>({id:c.id,bid:b.id,title:b.title||'영상 북마크',start:c.start,end:c.end,text:c.caution}))):[];
  return <div className="sing-tech">
  <div className="sing-tech-subtabs">{[['skills',itemLabel],['bookmarks','북마크 ('+d.bookmarks.length+')'],['notes',isSong?'학습 메모':'학습 노트']].map(([key,label])=><button type="button" key={key} className={sub===key?'on':''} onClick={()=>{Sub(key);Q('')}}>{label}</button>)}</div>
  <div className="sing-tech-heading"><h2>{sub==='skills'?itemLabel+' 라이브러리':sub==='bookmarks'?'영상 북마크':isSong?'학습 메모':'학습 노트'}</h2><button type="button" className="sing-tech-primary" onClick={()=>open(sub)}><Plus size={15}/> 추가</button></div>
- {sub!=='notes'&&<div className="sing-tech-search"><Search size={15}/><input value={query} onChange={e=>Q(e.target.value)} placeholder="제목·분류·메모 검색"/></div>}
+ {sub!=='notes'&&<div className="sing-tech-search"><Search size={15}/><input value={query} onChange={e=>Q(e.target.value)} placeholder={sub==='bookmarks'?'영상 제목·연결 기술·분류·메모 검색':'제목·분류·메모 검색'}/></div>}
  {sub==='skills'&&<div className="sing-tech-filters"><select value={major} onChange={e=>{A(e.target.value);B('전체')}}>{cats.map(x=><option key={x}>{x}</option>)}</select><select value={minor} onChange={e=>B(e.target.value)}>{subs.map(x=><option key={x}>{x}</option>)}</select></div>}
  {sub==='notes'?<TechniqueLearningNotes genre={VOCAL_GENRE} kind={itemLabel} skills={d.skills} bookmarks={d.bookmarks} notes={d.notes}/>:<div className="sing-tech-list">{rows.map(x=><div className="sing-tech-line" key={x.id}>{(sub==='skills'?primaryPhoto(x):videoId(x.url)?'https://img.youtube.com/vi/'+videoId(x.url)+'/mqdefault.jpg':'')?<img className="sing-tech-thumb" src={sub==='skills'?primaryPhoto(x):'https://img.youtube.com/vi/'+videoId(x.url)+'/mqdefault.jpg'} alt=""/>:<div className="sing-tech-thumb sing-tech-placeholder">{sub==='skills'?<BookOpen size={17}/>:<Bookmark size={17}/>}</div>}<button type="button" className="sing-tech-line-main" onClick={()=>open(sub,x)}><b>{x.name||x.title}</b><small>{sub==='skills'?[x.category,x.subcategory].filter(Boolean).join(' · '):x.memo?.slice(0,45)||x.url||'등록된 영상'}</small>{isSong&&sub==='skills'&&(x.karaoke?.tj||x.karaoke?.kumyoung)&&<small className="karaoke-numbers">{[x.karaoke.tj&&'TJ '+x.karaoke.tj,x.karaoke.kumyoung&&'금영 '+x.karaoke.kumyoung].filter(Boolean).join(' · ')}</small>}</button>{sub==='skills'&&<select aria-label="숙련도" className="sing-tech-status" value={x.status||'미습득'} onChange={e=>evaluate(x.id,e.target.value)}>{statuses.map(st=><option key={st}>{st}</option>)}</select>}<button type="button" className="sing-tech-icon" aria-label="편집" onClick={()=>open(sub,x)}><Pencil size={15}/></button></div>)}</div>}
  {sub!=='notes'&&rows.length===0&&<p className="sing-tech-empty">등록된 항목이 없어.</p>}
