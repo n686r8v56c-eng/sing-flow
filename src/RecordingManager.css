@@ -25,3 +25,32 @@
 .rm-delete:disabled{opacity:.5}
 .rm-message{margin:0;padding:9px;border-radius:9px;background:#f2edf8;color:#65467b;font-size:11px;line-height:1.6}
 @media(max-width:370px){.rm-filters{grid-template-columns:1fr 1fr}.rm-filters select:last-child{grid-column:span 2}}
+
+
+/* Readable phone typography; retain desktop sizes and existing layout. */
+@media (max-width: 749px) {
+    .rm-metrics small,.rm-main small,.rm-bottom small {
+        font-size: 14px !important
+    }
+    .rm-hint {
+        font-size: 14px !important
+    }
+    .rm-actions button {
+        font-size: 14px !important
+    }
+    .rm-main b {
+        font-size: 15px !important
+    }
+    .rm-empty {
+        font-size: 15px !important
+    }
+    .rm-bottom b {
+        font-size: 15px !important
+    }
+    .rm-delete {
+        font-size: 15px !important
+    }
+    .rm-message {
+        font-size: 14px !important
+    }
+}

@@ -8,3 +8,100 @@
 .home-kpi b{font-size:23px;line-height:1.1}
 .home-kpi span{font-size:11px;color:#9a92a2}
 @media(min-width:700px){.stats.home-kpis{grid-template-columns:repeat(6,minmax(0,1fr))}}
+
+
+/* Readable phone typography; retain desktop sizes and existing layout. */
+@media (max-width: 749px) {
+    body {
+        font-size: 16px !important
+    }
+    .logo small {
+        font-size: 13px !important
+    }
+    .sync {
+        font-size: 13px !important
+    }
+    .headline span {
+        font-size: 15px !important
+    }
+    .sectiontitle b {
+        font-size: 16px !important
+    }
+    .metric small {
+        font-size: 14px !important
+    }
+    .metric span {
+        font-size: 14px !important
+    }
+    .listrow b {
+        font-size: 16px !important
+    }
+    .listrow small {
+        font-size: 14px !important
+    }
+    .detailhead p {
+        font-size: 14px !important
+    }
+    h4 {
+        font-size: 16px !important
+    }
+    .checkrow span {
+        font-size: 16px !important
+    }
+    .primary,.secondary {
+        font-size: 16px !important
+    }
+    .textbutton,.linkbtn {
+        font-size: 15px !important
+    }
+    .field>span {
+        font-size: 14px !important
+    }
+    .subtabs button {
+        font-size: 15px !important
+    }
+    .filterrow select {
+        font-size: 15px !important
+    }
+    .empty {
+        font-size: 15px !important
+    }
+    .hint,.notice {
+        font-size: 14px !important
+    }
+    .uploadrow {
+        font-size: 15px !important
+    }
+    .switchlabel {
+        font-size: 15px !important
+    }
+    .segment {
+        font-size: 15px !important
+    }
+    .logmain b,.logmain small {
+        font-size: 14px !important
+    }
+    .bookmarkrow a {
+        font-size: 15px !important
+    }
+    .bottomnav span {
+        font-size: 13px !important
+    }
+    .authcard>p {
+        font-size: 15px !important
+    }
+    .error {
+        font-size: 15px !important
+    }
+    @media (max-width:650px) {
+        .metric span {
+            font-size: 13px !important
+        }
+    }
+    .home-kpi small {
+        font-size: 14px !important
+    }
+    .home-kpi span {
+        font-size: 14px !important
+    }
+}

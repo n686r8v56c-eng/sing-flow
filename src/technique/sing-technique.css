@@ -324,3 +324,350 @@
 .sing-tech .tech-study-create-row input{flex:1;min-width:0;min-height:33px;padding:5px 7px;border-radius:7px;border:1px solid #e2d6ee;font-size:12px!important}
 .sing-tech .tech-study-create-row button{flex:none;min-height:33px;padding:5px 7px;background:#ece4f6;color:#674588;border-radius:7px;font-size:11px!important;white-space:nowrap}
 .sing-tech .tech-study-create-row button:disabled{opacity:.45}
+
+
+/* Readable phone typography; retain desktop sizes and existing layout. */
+@media (max-width: 749px) {
+    .sing-tech label {
+        font-size: 14px !important
+    }
+    .sing-tech-subtabs button {
+        font-size: 15px !important
+    }
+    .sing-tech-primary {
+        font-size: 15px !important
+    }
+    .sing-tech-line-main b {
+        font-size: 16px !important
+    }
+    .sing-tech-line-main small {
+        font-size: 13px !important
+    }
+    .sing-tech-empty {
+        font-size: 15px !important
+    }
+    .sing-tech-guide-head b {
+        font-size: 15px !important
+    }
+    .sing-tech-light,.sing-tech-delete {
+        font-size: 15px !important
+    }
+    .sing-tech-guide p {
+        font-size: 15px !important
+    }
+    .sing-tech-guide strong {
+        font-size: 15px !important
+    }
+    .sing-tech-chips button {
+        font-size: 14px !important
+    }
+    .sing-tech-history strong {
+        font-size: 16px !important
+    }
+    .sing-tech-history small,.sing-tech-muted {
+        font-size: 14px !important
+    }
+    .sing-tech-history p {
+        font-size: 15px !important
+    }
+    .sing-tech-formbuttons>.sing-tech-primary {
+        font-size: 16px !important
+    }
+    .sing-tech .tech-photo-header strong,.sing-tech .tech-clip-head b,.sing-tech .tech-note-head b {
+        font-size: 16px !important
+    }
+    .sing-tech .tech-photo-upload {
+        font-size: 15px !important
+    }
+    .sing-tech .tech-muted {
+        font-size: 14px !important
+    }
+    .sing-tech .tech-modes button {
+        font-size: 15px !important
+    }
+    .sing-tech .tech-no-video {
+        font-size: 15px !important
+    }
+    .sing-tech .tech-caution {
+        font-size: 15px !important
+    }
+    .sing-tech .tech-zoom-bar button {
+        font-size: 15px !important
+    }
+    .sing-tech .tech-zoom-bar small {
+        font-size: 13px !important
+    }
+    .sing-tech .tech-clip-head b {
+        font-size: 15px !important
+    }
+    .sing-tech .tech-clip-head button {
+        font-size: 14px !important
+    }
+    .sing-tech .tech-clip-tabs button {
+        font-size: 14px !important
+    }
+    .sing-tech .tech-clip-tabs small {
+        font-size: 13px !important
+    }
+    .sing-tech .tech-fields label {
+        font-size: 14px !important
+    }
+    .sing-tech .tech-fields .secondary {
+        font-size: 14px !important
+    }
+    .sing-tech .tech-history small {
+        font-size: 14px !important
+    }
+    .sing-tech .tech-history p {
+        font-size: 15px !important
+    }
+    .sing-tech .tech-external {
+        font-size: 15px !important
+    }
+    .sing-tech .tech-note-head button {
+        font-size: 15px !important
+    }
+    .sing-tech .tech-note-body>b {
+        font-size: 16px !important
+    }
+    .sing-tech .tech-note-body>small {
+        font-size: 14px !important
+    }
+    .sing-tech .tech-note-copy p {
+        font-size: 15px !important
+    }
+    .sing-tech .tech-note-copy button {
+        font-size: 14px !important
+    }
+    .sing-tech .tech-skill-search>label {
+        font-size: 14px !important
+    }
+    .sing-tech .tech-skill-search-results button {
+        font-size: 15px !important
+    }
+    .sing-tech .tech-skill-search-results button small {
+        font-size: 13px !important
+    }
+    .sing-tech .tech-skill-search-results p {
+        font-size: 15px !important
+    }
+    .sing-tech .sing-voice-record-section>strong,.sing-tech .sing-voice-log-section>strong {
+        font-size: 16px !important
+    }
+    .sing-tech .sing-voice-muted {
+        font-size: 14px !important
+    }
+    .sing-tech .sing-voice-entry-heading b {
+        font-size: 15px !important
+    }
+    .sing-tech .sing-voice-entry-heading small {
+        font-size: 14px !important
+    }
+    .sing-tech .sing-voice-compare>b {
+        font-size: 15px !important
+    }
+    .sing-tech .sing-voice-record-section .recbutton {
+        font-size: 15px !important
+    }
+    .sing-tech .sing-voice-record-section .recorder .error {
+        font-size: 14px !important
+    }
+    .sing-tech .tech-note-youtube {
+        font-size: 14px !important
+    }
+    .sing-tech .tech-note-export button {
+        font-size: 14px !important
+    }
+    .sing-tech .tech-export-scope {
+        font-size: 13px !important
+    }
+    .sing-tech .tech-export-error {
+        font-size: 14px !important
+    }
+    .sing-tech .tech-copy-status {
+        font-size: 14px !important
+    }
+    .sing-tech .tech-note-head>.tech-note-copy-all {
+        font-size: 14px !important
+    }
+    .sing-tech .mr-source-tabs button {
+        font-size: 15px !important
+    }
+    .sing-tech .mr-empty {
+        font-size: 15px !important
+    }
+    .sing-tech .mr-player-top strong {
+        font-size: 16px !important
+    }
+    .sing-tech .mr-player-top small,.sing-tech .mr-tip,.sing-tech .mr-upload small {
+        font-size: 13px !important
+    }
+    .sing-tech .mr-progress small {
+        font-size: 13px !important
+    }
+    .sing-tech .mr-control-head b {
+        font-size: 15px !important
+    }
+    .sing-tech .mr-control-head strong {
+        font-size: 16px !important
+    }
+    .sing-tech .mr-adjust>button {
+        font-size: 13px !important
+    }
+    .sing-tech .mr-error {
+        font-size: 14px !important
+    }
+    .sing-tech .mr-upload label {
+        font-size: 15px !important
+    }
+    .sing-tech .mr-upload input[type=file] {
+        font-size: 15px !important
+    }
+    .sing-tech .mr-upload-pending {
+        font-size: 14px !important
+    }
+    .sing-tech .mr-upload-pending strong {
+        font-size: 15px !important
+    }
+    .sing-tech .mr-upload-pending span {
+        font-size: 14px !important
+    }
+    .sing-tech .mr-segment-head b {
+        font-size: 15px !important
+    }
+    .sing-tech .mr-segment-head button,.sing-tech .mr-segment-marks button {
+        font-size: 14px !important
+    }
+    .sing-tech .mr-segment-tabs b {
+        font-size: 14px !important
+    }
+    .sing-tech .mr-segment-tabs small {
+        font-size: 13px !important
+    }
+    .sing-tech .mr-segment-editor label {
+        font-size: 14px !important
+    }
+    .sing-tech .mr-segment-remove {
+        font-size: 14px !important
+    }
+    .sing-tech .mr-segment-play button {
+        font-size: 14px !important
+    }
+    .sing-tech .mr-segment-caution {
+        font-size: 14px !important
+    }
+    .sing-tech .mr-recording-panel>b {
+        font-size: 15px !important
+    }
+    .sing-tech .tech-full-clip {
+        font-size: 15px !important
+    }
+    .sing-tech .sing-tech-related {
+        font-size: 14px !important
+    }
+    .sing-tech .sing-tech-related span {
+        font-size: 14px !important
+    }
+    .sing-tech .sing-tech-related-open {
+        font-size: 15px !important
+    }
+    .sing-tech .sing-tech-linked-filter {
+        font-size: 14px !important
+    }
+    .sing-tech .sing-tech-linked-filter button {
+        font-size: 14px !important
+    }
+    .tech-chapter-import label {
+        font-size: 15px !important
+    }
+    .tech-chapter-import textarea {
+        font-size: 15px !important
+    }
+    .tech-chapter-import-foot small {
+        font-size: 13px !important
+    }
+    .tech-chapter-notice {
+        font-size: 14px !important
+    }
+    .sing-tech .tech-point-linked {
+        font-size: 14px !important
+    }
+    .sing-tech .tech-point-linked span {
+        font-size: 14px !important
+    }
+    .sing-tech .tech-quickmark-head>b {
+        font-size: 16px !important
+    }
+    .sing-tech .tech-quickmark-capture {
+        font-size: 15px !important
+    }
+    .sing-tech .tech-quickmark-capture small {
+        font-size: 14px !important
+    }
+    .sing-tech .tech-quickmark-top>button:first-child {
+        font-size: 14px !important
+    }
+    .sing-tech .tech-quickmark-top>input {
+        font-size: 15px !important
+    }
+    .sing-tech .tech-quickmark-card>label {
+        font-size: 14px !important
+    }
+    .sing-tech .tech-quickmark-card select {
+        font-size: 15px !important
+    }
+    .sing-tech .tech-quickmark-card textarea {
+        font-size: 15px !important
+    }
+    .sing-tech .sing-quick-import>label b {
+        font-size: 15px !important
+    }
+    .sing-tech .sing-quick-import textarea {
+        font-size: 15px !important
+    }
+    .sing-tech .sing-quick-import-actions>small {
+        font-size: 13px !important
+    }
+    .sing-tech .sing-quick-import-actions button {
+        font-size: 14px !important
+    }
+    .sing-tech .sing-quick-import-status {
+        font-size: 14px !important
+    }
+    .sing-tech .tech-training-modes button {
+        font-size: 15px !important
+    }
+    .sing-tech .tech-training-timeline button {
+        font-size: 14px !important
+    }
+    .sing-tech .tech-training-practice-note>b {
+        font-size: 15px !important
+    }
+    .sing-tech .tech-training-practice-note>small {
+        font-size: 14px !important
+    }
+    .sing-tech .tech-training-practice-note>p {
+        font-size: 15px !important
+    }
+    .sing-tech .tech-study-skill-picker>b {
+        font-size: 14px !important
+    }
+    .sing-tech .tech-study-skill-filters label {
+        font-size: 13px !important
+    }
+    .sing-tech .tech-study-skill-picker select {
+        font-size: 15px !important
+    }
+    .sing-tech .tech-study-skill-picker .tech-muted {
+        font-size: 13px !important
+    }
+    .sing-tech .tech-study-create-toggle {
+        font-size: 14px !important
+    }
+    .sing-tech .tech-study-create-row input {
+        font-size: 15px !important
+    }
+    .sing-tech .tech-study-create-row button {
+        font-size: 14px !important
+    }
+}

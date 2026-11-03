@@ -39,3 +39,44 @@
 .sing-training-remove,.sing-training-cancel{border:0;background:none;color:#7654a1;font-size:12px;display:flex;justify-content:center;align-items:center;gap:6px;padding:10px}
 .sing-training-external{display:inline-flex;align-items:center;gap:5px;font-size:12px;color:#78569e}
 @media(min-width:750px){.sing-training-overlay{align-items:center;padding:20px}.sing-training-modal{border-radius:15px;max-height:86dvh}}
+
+
+/* Readable phone typography; retain desktop sizes and existing layout. */
+@media (max-width: 749px) {
+    .sing-training-tabs button {
+        font-size: 15px !important
+    }
+    .sing-training-line-main b {
+        font-size: 16px !important
+    }
+    .sing-training-line-main small {
+        font-size: 13px !important
+    }
+    .sing-training-bookmark-count {
+        font-size: 13px !important
+    }
+    .sing-training-empty {
+        font-size: 15px !important
+    }
+    .sing-training-editor label {
+        font-size: 14px !important
+    }
+    .sing-training-bookmark-head strong,.sing-training-recording>strong,.sing-training-log-title {
+        font-size: 16px !important
+    }
+    .sing-training-light {
+        font-size: 14px !important
+    }
+    .sing-training-bookmark-row {
+        font-size: 15px !important
+    }
+    .sing-training-save {
+        font-size: 16px !important
+    }
+    .sing-training-remove,.sing-training-cancel {
+        font-size: 15px !important
+    }
+    .sing-training-external {
+        font-size: 15px !important
+    }
+}

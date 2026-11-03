@@ -11,3 +11,23 @@
 .training-classification-inputs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;min-width:0}
 .training-classification-inputs>.field{min-width:0}
 .training-classification-inputs input{box-sizing:border-box;width:100%;min-width:0;max-width:100%;font-size:16px!important}
+
+
+/* Readable phone typography; retain desktop sizes and existing layout. */
+@media (max-width: 749px) {
+    .training-guide-heading>b {
+        font-size: 15px !important
+    }
+    .training-guide-toggle {
+        font-size: 14px !important
+    }
+    .training-guide-panel>p {
+        font-size: 14px !important
+    }
+    .training-guide-category>strong {
+        font-size: 15px !important
+    }
+    .training-guide-options button {
+        font-size: 14px !important
+    }
+}
