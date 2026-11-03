@@ -4,7 +4,7 @@ import {Play,Pause,Minus,Plus,RotateCcw} from 'lucide-react';
 
 const showTime=n=>{const s=Math.max(0,Math.floor(n||0));return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')};
 const clamp=(v,lo,hi)=>Math.min(hi,Math.max(lo,v));
-const MRPlayer=forwardRef(function MRPlayer({url,clip,repeat=true,settings,onSettingsChange},ref){
+const MRPlayer=forwardRef(function MRPlayer({url,clip,repeat=true,settings,onSettingsChange,onReadyChange},ref){
  const [ready,R]=useState(false),[busy,B]=useState(false),[playing,P]=useState(false),[time,T]=useState(0),[length,L]=useState(0),[error,E]=useState('');
  const player=useRef(null),position=useRef(0),clock=useRef(0),running=useRef(false),rate=useRef(1),keyRef=useRef(0),lengthRef=useRef(0),repeatRef=useRef(true);
  const key=clamp(Number(settings?.keyShift)||0,-6,6),speed=clamp(Number(settings?.speed)||100,50,125);
@@ -30,11 +30,11 @@ const MRPlayer=forwardRef(function MRPlayer({url,clip,repeat=true,settings,onSet
  const pause=()=>{if(!running.current)return;position.current=clamp(current(),0,lengthRef.current);stop();T(position.current)};
  const seek=t=>{const n=clamp(Number(t)||0,0,lengthRef.current);if(running.current)playAt(n);else{position.current=n;T(n)}};
  useImperativeHandle(ref,()=>({playFrom:playAt,pause,stop,getTime:()=>current(),isReady:()=>Boolean(player.current?.loaded)}));
- useEffect(()=>{let cancelled=false;stop();player.current?.dispose();player.current=null;R(false);B(Boolean(url));E('');T(0);L(0);position.current=0;
+ useEffect(()=>{let cancelled=false;stop();player.current?.dispose();player.current=null;R(false);onReadyChange?.(false);B(Boolean(url));E('');T(0);L(0);position.current=0;
   if(!url){B(false);return}
-  const p=new Tone.GrainPlayer({url,loop:false,grainSize:0.12,overlap:0.06,detune:keyRef.current*100,playbackRate:rate.current,onload:()=>{if(cancelled)return;const len=p.buffer.duration;lengthRef.current=len;L(len);R(true);B(false)},onerror:(err)=>{if(!cancelled){E('MR 파일을 불러오지 못했어: '+(err?.message||''));B(false)}}}).toDestination();
+  const p=new Tone.GrainPlayer({url,loop:false,grainSize:0.12,overlap:0.06,detune:keyRef.current*100,playbackRate:rate.current,onload:()=>{if(cancelled)return;const len=p.buffer.duration;lengthRef.current=len;L(len);R(true);onReadyChange?.(true);B(false)},onerror:(err)=>{if(!cancelled){E('MR 파일을 불러오지 못했어: '+(err?.message||''));B(false)}}}).toDestination();
   player.current=p;
-  return()=>{cancelled=true;try{p.stop();p.dispose()}catch{}if(player.current===p)player.current=null;running.current=false};
+  return()=>{cancelled=true;try{p.stop();p.dispose()}catch{}if(player.current===p)player.current=null;running.current=false;onReadyChange?.(false)};
  },[url]);
  useEffect(()=>{if(player.current){player.current.detune=key*100;player.current.playbackRate=speed/100}},[key,speed]);
  useEffect(()=>{if(!ready)return;const timer=setInterval(()=>{
