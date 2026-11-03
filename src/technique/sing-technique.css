@@ -245,3 +245,11 @@
 
 /* Quick whole-video clip in YouTube edit mode */
 .sing-tech .tech-full-clip{display:flex;justify-content:center;align-items:center;width:100%;min-height:36px;margin:7px 0;background:#ebe1f7;color:#6f4898;border-radius:9px;font-size:12px!important;font-weight:700}
+
+/* Direct navigation from a skill or training item to related bookmarks */
+.sing-tech .sing-tech-related{flex:none;display:inline-flex;gap:3px;align-items:center;justify-content:center;min-width:34px;min-height:30px;border-radius:8px;background:#eee7f8;color:#7651a4;padding:5px 6px;font-size:11px!important;font-weight:700}
+.sing-tech .sing-tech-related span{font-size:11px}
+.sing-tech .sing-tech-related-open{display:flex;align-items:center;justify-content:center;gap:7px;background:#eee7f8;color:#704ba0;border-radius:9px;padding:10px;font-size:12px!important;font-weight:700}
+.sing-tech .sing-tech-linked-filter{display:flex;align-items:center;justify-content:space-between;gap:6px;background:#f2ecfa;border-radius:9px;margin:0 0 9px;padding:8px 9px;font-size:11px;color:#70539a}
+.sing-tech .sing-tech-linked-filter span{display:flex;align-items:center;gap:5px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sing-tech .sing-tech-linked-filter button{flex:none;background:white;border-radius:7px;color:#7651a4;padding:6px 7px;font-size:11px!important}
