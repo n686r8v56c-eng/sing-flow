@@ -243,7 +243,7 @@ if(pointMode){
    <section className="tech-fields tech-training-practice-record">
     <label>기술 숙련도<select value={status||activeSkill?.status||'미습득'} onChange={e=>S(e.target.value)}>{['미습득','연습 중','습득 완료'].map(x=><option key={x}>{x}</option>)}</select></label>
     <button type="button" className="secondary" disabled={!activeSkill} onClick={()=>{evaluatePractice(activeSkill.id,status||activeSkill.status||'미습득');S('')}}><Check size={14}/> 숙련도 기록</button>
-    <VoiceRecordingLog key={recordingType+'-'+(activeSkill?.id||'none')+'-'+(activeMarker?.id||'none')} kind={recordingType} skillId={activeSkill?.id} bookmarkId={v.id} clipId={activeMarker?.id} logs={recordingLogs} onSave={onSaveRecording} onDelete={onDeleteRecording}/>
+    <VoiceRecordingLog key={recordingType+'-'+(activeSkill?.id||'none')+'-'+(activeMarker?.id||'none')} kind={recordingType} skillId={activeSkill?.id} bookmarkId={v.id} clipId={activeMarker?.id} showAllForSkill logs={recordingLogs} onSave={onSaveRecording} onDelete={onDeleteRecording}/>
    </section>
   </>}
  </div>;
