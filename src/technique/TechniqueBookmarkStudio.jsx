@@ -7,7 +7,7 @@ const uid=()=>crypto.randomUUID?.()||Date.now().toString();
 export const videoId=u=>String(u||'').match(/(?:youtu\.be\/|youtube(?:-nocookie)?\.com\/(?:watch\?v=|embed\/|shorts\/))([\w-]{11})/)?.[1]||'';
 const sec=x=>{if(typeof x==='number')return x;const s=String(x??'').trim();if(/^\d+:\d\d$/.test(s)){const[a,b]=s.split(':').map(Number);return a*60+b}return s!==''&&Number.isFinite(Number(s))?Number(s):NaN};
 const fmt=x=>{const n=Number.isFinite(x)?Math.max(0,Math.floor(x)):0;return String(Math.floor(n/60)).padStart(2,'0')+':'+String(n%60).padStart(2,'0')};
-const parseChapterLines=text=>{
+export const parseChapterLines=text=>{
  const entries=[],invalid=[];
  String(text||'').split(/\r?\n/).forEach((line,i)=>{
   if(!line.trim())return;
