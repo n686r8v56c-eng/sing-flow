@@ -215,3 +215,7 @@
 .sing-tech .mr-upload{display:grid;gap:7px;margin:9px 0;padding:9px;background:#f8f4fb;border-radius:9px}
 .sing-tech .mr-upload label{font-size:12px}
 .sing-tech .mr-upload input[type=file]{font-size:12px!important;padding:7px}
+
+.sing-tech .mr-upload-pending{display:grid;gap:3px;padding:9px 10px;border:1px solid #d9c7ea;border-radius:9px;background:#f0e9f8;color:#72549b;font-size:11px;overflow-wrap:anywhere;line-height:1.5}
+.sing-tech .mr-upload-pending strong{font-size:12px;color:#65448c}
+.sing-tech .mr-upload-pending span{font-size:11px}
