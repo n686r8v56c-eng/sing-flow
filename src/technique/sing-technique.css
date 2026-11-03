@@ -253,3 +253,13 @@
 .sing-tech .sing-tech-linked-filter{display:flex;align-items:center;justify-content:space-between;gap:6px;background:#f2ecfa;border-radius:9px;margin:0 0 9px;padding:8px 9px;font-size:11px;color:#70539a}
 .sing-tech .sing-tech-linked-filter span{display:flex;align-items:center;gap:5px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .sing-tech .sing-tech-linked-filter button{flex:none;background:white;border-radius:7px;color:#7651a4;padding:6px 7px;font-size:11px!important}
+
+
+/* Paste YouTube chapter timestamps and create bookmark clips in bulk */
+.tech-chapter-import{margin:9px 0 12px;padding:11px;border:1px solid #e8dff0;border-radius:11px;background:#f9f6fd;display:grid;gap:8px}
+.tech-chapter-import label{display:grid;gap:6px;font-size:12px;font-weight:700;color:#685182}
+.tech-chapter-import textarea{display:block;width:100%;max-width:100%;min-height:88px;resize:vertical;background:white;border:1px solid #e4d8ed;border-radius:8px;padding:9px;font-size:12px;line-height:1.55;color:#342b40;box-sizing:border-box}
+.tech-chapter-import-foot{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between}
+.tech-chapter-import-foot small{font-size:10px;color:#85788f;line-height:1.5;flex:1;min-width:180px}
+.tech-chapter-import-foot button{min-height:33px;padding:6px 10px;white-space:nowrap}
+.tech-chapter-notice{color:#77529a;font-size:11px;font-weight:600;line-height:1.5}
