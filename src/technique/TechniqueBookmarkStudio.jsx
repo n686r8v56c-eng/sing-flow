@@ -53,7 +53,7 @@ function SkillSearch({skills,selectedId,onSelect,label='연결할 기술'}){
  </div>
 }
 function Video({id,onReady,onPlaying}){const host=useRef(null);useEffect(()=>{if(!id){onReady(null);return}let instance,disposed=false;const mount=()=>{if(disposed||!window.YT?.Player||!host.current)return;instance=new window.YT.Player(host.current,{videoId:id,playerVars:{playsinline:1,rel:0},events:{onReady:e=>onReady(e.target),onStateChange:e=>onPlaying(e.data===1)}})};if(window.YT?.Player)mount();else{const previous=window.onYouTubeIframeAPIReady;window.onYouTubeIframeAPIReady=()=>{previous?.();mount()};if(!document.querySelector('script[src="https://www.youtube.com/iframe_api"]')){const script=document.createElement('script');script.src='https://www.youtube.com/iframe_api';document.head.appendChild(script)}}return()=>{disposed=true;onReady(null);try{instance?.destroy()}catch{}}},[id]);return id?<div className="tech-video" ref={host}/>:<div className="tech-video tech-no-video">유튜브 URL을 등록해 줘.</div>}
-export default function TechniqueBookmarkStudio({item,genres,skills,linkedTechniqueSkills=[],onSave,onAutoSave,onDelete,onEvaluate,recordingLogs=[],recordingKind='technique',onSaveRecording,onDeleteRecording,songMode=false,pointMode=false,onUploadMR,onPersistMRSettings,onPlaybackSeconds,draftScope='guest'}){const draftKey='sing-flow-bookmark-draft-v2:'+draftScope+':'+recordingKind+':'+item.id;
+export default function TechniqueBookmarkStudio({item,genres,skills,linkedTechniqueSkills=[],onSave,onAutoSave,onDelete,onEvaluate,onEvaluateLinkedTechnique,recordingLogs=[],recordingKind='technique',onSaveRecording,onDeleteRecording,songMode=false,pointMode=false,onUploadMR,onPersistMRSettings,onPlaybackSeconds,draftScope='guest'}){const draftKey='sing-flow-bookmark-draft-v2:'+draftScope+':'+recordingKind+':'+item.id;
 const restoredDraft=useRef(null);
 if(restoredDraft.current===null){
  try{const saved=JSON.parse(localStorage.getItem(draftKey)||'null');
@@ -63,7 +63,7 @@ if(restoredDraft.current===null){
 const [v,V]=useState(()=>{
  const saved=restoredDraft.current;
  return {...item,...(saved.v||{}),mr:item.mr,clips:Array.isArray(saved.v?.clips)?saved.v.clips:normalizedClips(item)};
-}),[mode,M]=useState(pointMode?'edit':(restoredDraft.current.mode|| (item._existing?'practice':'edit'))),[index,I]=useState(restoredDraft.current.index||0),[repeat,R]=useState(true),[playing,P]=useState(false),[time,T]=useState(0),[videoDuration,VideoDuration]=useState(0),[zoom,Z]=useState(false),[status,S]=useState(''),[note,N]=useState(''),[ready,Q]=useState(false),[mrReady,MRReady]=useState(false),[source,Source]=useState('youtube'),[mrFile,MRFile]=useState(null),[mrBusy,MRBusy]=useState(false),[mrUrl,MRUrl]=useState(''),[mrError,MRError]=useState(''),[chapterText,ChapterText]=useState(restoredDraft.current.chapterText||''),[chapterNotice,ChapterNotice]=useState('');
+}),[mode,M]=useState(pointMode?'study':(restoredDraft.current.mode|| (item._existing?'practice':'edit'))),[index,I]=useState(restoredDraft.current.index||0),[repeat,R]=useState(true),[playing,P]=useState(false),[time,T]=useState(0),[videoDuration,VideoDuration]=useState(0),[zoom,Z]=useState(false),[status,S]=useState(''),[note,N]=useState(''),[ready,Q]=useState(false),[mrReady,MRReady]=useState(false),[source,Source]=useState('youtube'),[mrFile,MRFile]=useState(null),[mrBusy,MRBusy]=useState(false),[mrUrl,MRUrl]=useState(''),[mrError,MRError]=useState(''),[chapterText,ChapterText]=useState(restoredDraft.current.chapterText||''),[chapterNotice,ChapterNotice]=useState('');
 const autoSaveRef=useRef(onAutoSave),player=useRef(null),mrPlayer=useRef(null),playbackPending=useRef(0),playbackCallback=useRef(onPlaybackSeconds),playbackActive=useRef(false),edited=useRef(Boolean(item.title||restoredDraft.current.v?.title)),clip=v.clips[index],id=videoId(v.url),linkableSkills=pointMode?[...linkedTechniqueSkills,...skills.filter(s=>!linkedTechniqueSkills.some(t=>t.id===s.id))]:skills,current=linkableSkills.filter(s=>s.genre===v.genre),[titleLoading,TL]=useState(false),[titleNotice,TN]=useState('');
 // Safari can discard an inactive tab or cross-origin iframe; keep edit state across reloads.
 useEffect(()=>{
@@ -193,31 +193,61 @@ if(!songMode&&v.clips.some(c=>!pointMode&&!c.fullVideo&&!c.chapterImported&&!ski
 useEffect(()=>{let live=true;MRUrl('');MRReady(false);if(v.mr?.localAudio){MRUrl(v.mr.localAudio);return}if(v.mr?.path)mediaUrl(v.mr.path).then(url=>{if(live)MRUrl(url)}).catch(e=>{if(live)MRError('MR 음원 주소 오류: '+e.message)});return()=>{live=false}},[v.mr?.path,v.mr?.localAudio]);
 const setMRSettings=values=>{V(old=>({...old,mrSettings:values}));onPersistMRSettings?.(v.id,values)};
 const chosen=linkableSkills.find(s=>s.id===(songMode?v.songId:clip?.skillId));
-if(pointMode)return <div className="tech-bookmark dance-bookmark-layout tech-training-single">
- <div className="tech-video-shell"><Video id={id} onReady={p=>{player.current=p;Q(Boolean(p))}} onPlaying={P}/></div>
- <section className="tech-quickmark" aria-label="훈련 타임마커">
-  <div className="tech-quickmark-head">
-   <b>타임마커</b>
-   <button type="button" className="tech-quickmark-capture" onClick={addQuickMarker} disabled={!ready}><Plus size={15}/> 지금 시점 찍기 <small>{fmt(time)}</small></button>
+if(pointMode){
+ const activeMarker=v.clips[index]||v.clips[0]||null;
+ const activeSkill=linkableSkills.find(skill=>skill.id===activeMarker?.skillId);
+ const isLinkedTechnique=linkedTechniqueSkills.some(skill=>skill.id===activeSkill?.id);
+ const recordingType=isLinkedTechnique?'technique':'training';
+ const evaluatePractice=(skillId,practiceStatus)=>{
+  if(isLinkedTechnique)onEvaluateLinkedTechnique?.(skillId,practiceStatus,'',v.id);
+  else onEvaluate?.(skillId,practiceStatus,'',v.id);
+ };
+ return <div className="tech-bookmark dance-bookmark-layout tech-training-single">
+  <div className="tech-training-modes">
+   <button type="button" className={mode==='study'?'selected':''} onClick={()=>M('study')}>스터디</button>
+   <button type="button" className={mode==='practice'?'selected':''} onClick={()=>{M('practice');I(x=>Math.min(x,Math.max(v.clips.length-1,0)))}}>연습</button>
   </div>
-  {v.clips.length===0&&<small className="tech-muted">{id?'영상을 보면서 현재 시점을 찍어 줘.':'URL 없이 등록한 타임마커는 아래에서 기술과 메모를 편집할 수 있어.'}</small>}
-  {v.clips.map(mark=>(
-   <div className="tech-quickmark-card" key={mark.id}>
-    <div className="tech-quickmark-top">
-     <button type="button" title={id?mark.start+'부터 재생':'등록된 시각'} disabled={!id||!ready} onClick={()=>seek(mark.start)}><Play size={13}/> {mark.start}</button>
-     <input aria-label="타임마커 핵심 내용" placeholder="핵심 내용" value={mark.label||''} onChange={e=>editQuickMarker(mark.id,'label',e.target.value)}/>
-     <button type="button" className="tech-quickmark-remove" aria-label="타임마커 삭제" onClick={()=>V(old=>({...old,clips:old.clips.filter(c=>c.id!==mark.id)}))}><Trash2 size={14}/></button>
+  {mode==='practice'&&<nav className="tech-training-timeline" aria-label="타임마커 재생 목록">
+   {v.clips.map((mark,i)=><button type="button" key={mark.id||i} className={index===i?'selected':''} onClick={()=>{I(i);S('');seek(mark.start)}} title={mark.label||mark.start} aria-label={mark.start+' 시점 재생'}>{mark.start}</button>)}
+   {!v.clips.length&&<small className="tech-muted">스터디에서 타임마커를 추가해 줘.</small>}
+  </nav>}
+  <div className="tech-video-shell"><Video id={id} onReady={p=>{player.current=p;Q(Boolean(p))}} onPlaying={P}/></div>
+  {mode==='study'?<>
+   <section className="tech-quickmark" aria-label="훈련 타임마커">
+    <div className="tech-quickmark-head">
+     <b>타임마커</b>
+     <button type="button" className="tech-quickmark-capture" onClick={addQuickMarker} disabled={!ready}><Plus size={15}/> 지금 시점 찍기 <small>{fmt(time)}</small></button>
     </div>
-    <label>연결 기술<select value={mark.skillId||''} onChange={e=>editQuickMarker(mark.id,'skillId',e.target.value)}>
-     <option value="">기술 선택 (선택 사항)</option>
-     {linkedTechniqueSkills.map(skill=><option key={'tech-'+skill.id} value={skill.id}>{skill.name||skill.title}</option>)}
-     {skills.filter(skill=>!linkedTechniqueSkills.some(t=>t.id===skill.id)).map(skill=><option key={'training-'+skill.id} value={skill.id}>{skill.name||skill.title}</option>)}
-    </select></label>
-    <textarea aria-label={mark.start+' 타임마커 메모'} rows={2} placeholder="메모 (선택)" value={mark.memo||''} onChange={e=>editQuickMarker(mark.id,'memo',e.target.value)}/>
-   </div>
-  ))}
- </section>
-</div>;
+    {!v.clips.length&&<small className="tech-muted">영상 재생 중 시점을 찍거나, 훈련 북마크 목록에서 타임스탬프를 일괄 등록할 수 있어.</small>}
+    {v.clips.map(mark=><div className="tech-quickmark-card" key={mark.id}>
+     <div className="tech-quickmark-top">
+      <button type="button" title={mark.start+' 시점 재생'} disabled={!id||!ready} onClick={()=>seek(mark.start)}><Play size={13}/> {mark.start}</button>
+      <input aria-label="타임마커 핵심 내용" placeholder="핵심 내용" value={mark.label||''} onChange={e=>editQuickMarker(mark.id,'label',e.target.value)}/>
+      <button type="button" className="tech-quickmark-remove" aria-label="타임마커 삭제" onClick={()=>V(old=>({...old,clips:old.clips.filter(c=>c.id!==mark.id)}))}><Trash2 size={14}/></button>
+     </div>
+     <label>기술 연결<select value={mark.skillId||''} onChange={e=>editQuickMarker(mark.id,'skillId',e.target.value)}>
+      <option value="">기술 선택 (선택 사항)</option>
+      {linkedTechniqueSkills.map(skill=><option key={'tech-'+skill.id} value={skill.id}>{skill.name||skill.title}</option>)}
+      {skills.filter(skill=>!linkedTechniqueSkills.some(t=>t.id===skill.id)).map(skill=><option key={'training-'+skill.id} value={skill.id}>{skill.name||skill.title}</option>)}
+     </select></label>
+     <textarea aria-label={mark.start+' 타임마커 메모'} rows={2} placeholder="메모 (선택)" value={mark.memo||''} onChange={e=>editQuickMarker(mark.id,'memo',e.target.value)}/>
+    </div>)}
+   </section>
+   <button type="button" className="primary tech-bookmark-save" disabled={mrBusy} onClick={save}><Check size={15}/> 저장</button>
+  </>:<>
+   {activeMarker&&<section className="tech-training-practice-note">
+    <b>{activeMarker.label||'타임마커'} · {activeMarker.start}</b>
+    {activeSkill&&<small>연결 기술 · {activeSkill.name||activeSkill.title}</small>}
+    <p>{activeMarker.memo?.trim()||activeMarker.caution?.trim()||'이 시점에 작성한 메모가 없어.'}</p>
+   </section>}
+   <section className="tech-fields tech-training-practice-record">
+    <label>기술 숙련도<select value={status||activeSkill?.status||'미습득'} onChange={e=>S(e.target.value)}>{['미습득','연습 중','습득 완료'].map(x=><option key={x}>{x}</option>)}</select></label>
+    <button type="button" className="secondary" disabled={!activeSkill} onClick={()=>{evaluatePractice(activeSkill.id,status||activeSkill.status||'미습득');S('')}}><Check size={14}/> 숙련도 기록</button>
+    <VoiceRecordingLog key={recordingType+'-'+(activeSkill?.id||'none')+'-'+(activeMarker?.id||'none')} kind={recordingType} skillId={activeSkill?.id} bookmarkId={v.id} clipId={activeMarker?.id} logs={recordingLogs} onSave={onSaveRecording} onDelete={onDeleteRecording}/>
+   </section>
+  </>}
+ </div>;
+}
 return <div className="tech-bookmark dance-bookmark-layout">{!pointMode&&<div className="tech-modes"><button type="button" className={mode==='practice'?'selected':''} onClick={()=>M('practice')}>연습 모드</button><button type="button" className={mode==='edit'?'selected':''} onClick={()=>M('edit')}>편집 모드</button></div>}{songMode&&mode==='practice'&&<div className="mr-source-tabs"><button type="button" className={source==='youtube'?'selected':''} onClick={()=>{Source('youtube');MRReady(false)}}>유튜브</button><button type="button" className={source==='mr'?'selected':''} onClick={()=>{Source('mr');Q(false)}}>MR 음원</button></div>}
 {(!songMode||source==='youtube'||mode==='edit')&&<div className={'tech-video-shell '+(zoom?'zoom':'')}><Video id={id} onReady={p=>{player.current=p;Q(Boolean(p));if(p){try{VideoDuration(Number(p.getDuration?.()||0))}catch{}}}} onPlaying={P}/>{mode==='practice'&&playing&&clip?.caution&&<div className="tech-caution"><b>주의할 점</b><span>{clip.caution}</span></div>}</div>}
 {songMode&&mode==='practice'&&source==='mr'&&(mrUrl?<MRPlayer ref={mrPlayer} url={mrUrl} settings={v.mrSettings||{keyShift:0,speed:100}} onSettingsChange={setMRSettings} onReadyChange={MRReady}/>:<div className="mr-empty">MR 음원이 없어. 편집 모드에서 MR 파일을 추가해 줘.{mrError&&<small>{mrError}</small>}</div>)}
