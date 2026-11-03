@@ -4,7 +4,7 @@ import {Play,Pause,Minus,Plus,RotateCcw,Repeat,Trash2} from 'lucide-react';
 
 const showTime=n=>{const s=Math.max(0,Math.floor(n||0));return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')};
 const clamp=(v,lo,hi)=>Math.min(hi,Math.max(lo,v));
-const parseTime=(value)=>{const t=String(value??'').trim();if(/^\\d+:\\d{1,2}$/.test(t)){const [m,s]=t.split(':').map(Number);return s<60?m*60+s:NaN}return t!==''&&Number.isFinite(Number(t))?Number(t):NaN};
+const parseTime=(value)=>{const t=String(value??'').trim();if(/^\d+:\d{1,2}$/.test(t)){const [m,s]=t.split(':').map(Number);return s<60?m*60+s:NaN}return t!==''&&Number.isFinite(Number(t))?Number(t):NaN};
 const defaultSegment={id:'mr-full',label:'전체 곡',start:0,end:0,caution:''};
 const MRPlayer=forwardRef(function MRPlayer({url,settings,onSettingsChange,onReadyChange},ref){
  const [ready,R]=useState(false),[busy,B]=useState(false),[playing,P]=useState(false),[time,T]=useState(0),[length,L]=useState(0),[error,E]=useState('');
