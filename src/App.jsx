@@ -41,7 +41,7 @@ async function deleteRecordings(ids){
   return {deleted,failed,warning:failed.length?'삭제 실패한 녹음은 목록에 남겨뒀어.':''};
  }finally{setDeletingRecordings(false)}
 }
-const deleteLinkedRecording=async id=>{const result=await deleteRecordings([id]);if(result.failed.length)throw Error('실제 저장 파일을 지우지 못했어. 다시 시도해 줘.');};
+const deleteLinkedRecording=async id=>{const current=(latest.current.logs||[]).find(l=>l.id===id);if(current?.pinned)throw Error('별표로 보호된 녹음이야. 녹음 관리에서 보호를 해제한 후 삭제해 줘.');const result=await deleteRecordings([id]);if(result.failed.length)throw Error('실제 저장 파일을 지우지 못했어. 다시 시도해 줘.');};
 const pinRecording=(id,pinned)=>patch(d=>({...d,logs:(d.logs||[]).map(l=>l.id===id?{...l,pinned}:l)}));
 function addSong(e){e.preventDefault();const f=new FormData(e.currentTarget);const id=uid();patch(d=>({...d,songs:[{id,title:f.get('title').trim(),artist:f.get('artist').trim(),youtube:f.get('youtube').trim(),key:f.get('key').trim(),notes:'',stages:[],parts:[],completed:false,tracks:{},segments:[]},...d.songs]}));setSongId(id);setModal(null);setTab('노래')}
 function addTraining(e){e.preventDefault();const f=new FormData(e.currentTarget),id=uid();patch(d=>({...d,trainings:[{id,title:f.get('title').trim(),category:(f.get('category')||'').trim()||'기타',subcategory:(f.get('subcategory')||'').trim()||'기타',description:f.get('description').trim(),bookmarks:[]},...d.trainings]}));setTrainId(id);setModal(null)}
