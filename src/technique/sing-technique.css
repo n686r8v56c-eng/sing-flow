@@ -219,3 +219,26 @@
 .sing-tech .mr-upload-pending{display:grid;gap:3px;padding:9px 10px;border:1px solid #d9c7ea;border-radius:9px;background:#f0e9f8;color:#72549b;font-size:11px;overflow-wrap:anywhere;line-height:1.5}
 .sing-tech .mr-upload-pending strong{font-size:12px;color:#65448c}
 .sing-tech .mr-upload-pending span{font-size:11px}
+
+/* MR practice A–B clips: separate from video bookmark sections */
+.sing-tech .mr-segment-head{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:5px}
+.sing-tech .mr-segment-head b{font-size:12px}
+.sing-tech .mr-segment-head button,.sing-tech .mr-segment-marks button{display:inline-flex;gap:4px;align-items:center;justify-content:center;background:#eee7f8;color:#74539f;border-radius:8px;padding:8px;font-size:11px!important}
+.sing-tech .mr-segment-tabs{display:flex;gap:6px;overflow-x:auto;max-width:100%;padding:2px 0 5px;scrollbar-width:thin}
+.sing-tech .mr-segment-tabs>button{min-width:100px;max-width:150px;flex:none;padding:8px 10px;display:grid;gap:3px;text-align:left;border:1px solid #e7dcef;background:#fff;border-radius:9px;color:#746488}
+.sing-tech .mr-segment-tabs>button.selected{background:#ece3f8;border-color:#b9a5d7;color:#68418e}
+.sing-tech .mr-segment-tabs b{font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sing-tech .mr-segment-tabs small{font-size:10px;font-variant-numeric:tabular-nums}
+.sing-tech .mr-segment-editor{display:grid;gap:8px;padding:9px;border-radius:10px;background:#f5f0fa}
+.sing-tech .mr-segment-editor label{font-size:11px}
+.sing-tech .mr-segment-editor input{width:100%;padding:8px;min-height:34px}
+.sing-tech .mr-segment-editor textarea{width:100%;min-height:58px;font-size:16px!important}
+.sing-tech .mr-segment-times,.sing-tech .mr-segment-marks,.sing-tech .mr-segment-play{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+.sing-tech .mr-segment-remove{justify-self:end;background:transparent;color:#9a648f;font-size:11px!important;display:inline-flex;align-items:center;gap:4px;padding:7px}
+.sing-tech .mr-segment-play button{display:flex;align-items:center;gap:5px;justify-content:center;background:#eee8f5;color:#705399;border-radius:8px;padding:9px 7px;font-size:11px!important}
+.sing-tech .mr-segment-play button.selected{background:#e5d9f4;color:#643b9a}
+.sing-tech .mr-segment-play button:disabled{opacity:.5}
+.sing-tech .mr-segment-caution{padding:9px;border-radius:9px;background:#eee7f8;display:grid;gap:4px;white-space:pre-wrap;font-size:11px;line-height:1.5}
+.sing-tech .mr-segment-caution b{color:#714d96}
+.sing-tech .mr-recording-panel{margin:8px 0 12px}
+.sing-tech .mr-recording-panel>b{font-size:12px}
