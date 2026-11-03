@@ -9,7 +9,7 @@ const patch=fn=>setData(d=>typeof fn==='function'?fn(d):{...d,...fn});const song
 async function saveRecording(blob,seconds,score,note,trainingId){const filename=`recording-${Date.now()}.${blob.type.includes('mp4')?'m4a':'webm'}`;if(session){const media=await putMedia(session.user,new File([blob],filename,{type:blob.type}));patch(d=>({...d,logs:[{id:uid(),type:trainingId?'training':'song',sourceId:trainingId||song?.id,seconds,score,note,date:new Date().toISOString(),media},...d.logs]}))}else{const base64=await new Promise((resolve,reject)=>{const r=new FileReader;r.onload=()=>resolve(r.result);r.onerror=()=>reject(r.error);r.readAsDataURL(blob)});patch(d=>({...d,logs:[{id:uid(),type:trainingId?'training':'song',sourceId:trainingId||song?.id,seconds,score,note,date:new Date().toISOString(),localAudio:base64},...d.logs]}))}}
 async function saveLinkedRecording(blob,seconds,score,note,context){
  const {kind,skillId,bookmarkId,clipId}=context;
- if(!skillId||!['technique','training'].includes(kind))throw Error('연결된 기술·훈련이 없어.');
+ if(!skillId||!['technique','training','song'].includes(kind))throw Error('연결된 기술·훈련·곡이 없어.');
  const filename=`recording-${Date.now()}.${blob.type.includes('mp4')?'m4a':'webm'}`;
  const recording={id:uid(),type:kind,sourceId:skillId,bookmarkId:bookmarkId||null,clipId:clipId||null,seconds,score,note,date:new Date().toISOString()};
  if(session){recording.media=await putMedia(session.user,new File([blob],filename,{type:blob.type}));}
