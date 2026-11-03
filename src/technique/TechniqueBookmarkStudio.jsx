@@ -53,8 +53,26 @@ function SkillSearch({skills,selectedId,onSelect,label='연결할 기술'}){
  </div>
 }
 function Video({id,onReady,onPlaying}){const host=useRef(null);useEffect(()=>{if(!id){onReady(null);return}let instance,disposed=false;const mount=()=>{if(disposed||!window.YT?.Player||!host.current)return;instance=new window.YT.Player(host.current,{videoId:id,playerVars:{playsinline:1,rel:0},events:{onReady:e=>onReady(e.target),onStateChange:e=>onPlaying(e.data===1)}})};if(window.YT?.Player)mount();else{const previous=window.onYouTubeIframeAPIReady;window.onYouTubeIframeAPIReady=()=>{previous?.();mount()};if(!document.querySelector('script[src="https://www.youtube.com/iframe_api"]')){const script=document.createElement('script');script.src='https://www.youtube.com/iframe_api';document.head.appendChild(script)}}return()=>{disposed=true;onReady(null);try{instance?.destroy()}catch{}}},[id]);return id?<div className="tech-video" ref={host}/>:<div className="tech-video tech-no-video">유튜브 URL을 등록해 줘.</div>}
-export default function TechniqueBookmarkStudio({item,genres,skills,onSave,onDelete,onEvaluate,recordingLogs=[],recordingKind='technique',onSaveRecording,onDeleteRecording,songMode=false,onUploadMR,onPersistMRSettings,onPlaybackSeconds}){const[v,V]=useState(()=>({...item,clips:normalizedClips(item)})),[mode,M]=useState(item._existing?'practice':'edit'),[index,I]=useState(0),[repeat,R]=useState(true),[playing,P]=useState(false),[time,T]=useState(0),[videoDuration,VideoDuration]=useState(0),[zoom,Z]=useState(false),[status,S]=useState(''),[note,N]=useState(''),[ready,Q]=useState(false),[mrReady,MRReady]=useState(false),[source,Source]=useState('youtube'),[mrFile,MRFile]=useState(null),[mrBusy,MRBusy]=useState(false),[mrUrl,MRUrl]=useState(''),[mrError,MRError]=useState(''),[chapterText,ChapterText]=useState(''),[chapterNotice,ChapterNotice]=useState('');
+export default function TechniqueBookmarkStudio({item,genres,skills,onSave,onDelete,onEvaluate,recordingLogs=[],recordingKind='technique',onSaveRecording,onDeleteRecording,songMode=false,onUploadMR,onPersistMRSettings,onPlaybackSeconds,draftScope='guest'}){const draftKey='sing-flow-bookmark-draft-v2:'+draftScope+':'+recordingKind+':'+item.id;
+const restoredDraft=useRef(null);
+if(restoredDraft.current===null){
+ try{const saved=JSON.parse(localStorage.getItem(draftKey)||'null');
+  restoredDraft.current=saved?.id===item.id? saved:{};
+ }catch{restoredDraft.current={}}
+}
+const [v,V]=useState(()=>{
+ const saved=restoredDraft.current;
+ return {...item,...(saved.v||{}),mr:item.mr,clips:Array.isArray(saved.v?.clips)?saved.v.clips:normalizedClips(item)};
+}),[mode,M]=useState(restoredDraft.current.mode|| (item._existing?'practice':'edit')),[index,I]=useState(restoredDraft.current.index||0),[repeat,R]=useState(true),[playing,P]=useState(false),[time,T]=useState(0),[videoDuration,VideoDuration]=useState(0),[zoom,Z]=useState(false),[status,S]=useState(''),[note,N]=useState(''),[ready,Q]=useState(false),[mrReady,MRReady]=useState(false),[source,Source]=useState('youtube'),[mrFile,MRFile]=useState(null),[mrBusy,MRBusy]=useState(false),[mrUrl,MRUrl]=useState(''),[mrError,MRError]=useState(''),[chapterText,ChapterText]=useState(restoredDraft.current.chapterText||''),[chapterNotice,ChapterNotice]=useState('');
 const player=useRef(null),mrPlayer=useRef(null),playbackPending=useRef(0),playbackCallback=useRef(onPlaybackSeconds),playbackActive=useRef(false),edited=useRef(Boolean(item.title)),clip=v.clips[index],id=videoId(v.url),current=skills.filter(s=>s.genre===v.genre),[titleLoading,TL]=useState(false),[titleNotice,TN]=useState('');
+// Safari can discard an inactive tab or cross-origin iframe; keep edit state across reloads.
+useEffect(()=>{
+ try{
+  const snapshot={id:item.id,v:{...v,mr:undefined},mode,index,chapterText};
+  localStorage.setItem(draftKey,JSON.stringify(snapshot));
+ }catch{}
+},[draftKey,item.id,v,mode,index,chapterText]);
+const clearEditorDraft=()=>{try{localStorage.removeItem(draftKey)}catch{}};
 playbackCallback.current=onPlaybackSeconds;
 const flushPlayback=()=>{
  const amount=playbackPending.current;
@@ -109,7 +127,7 @@ const importChapters=()=>{
 };
 const add=()=>{const previous=v.clips[index]||v.clips[v.clips.length-1];const skillId=songMode?v.songId||'':previous?.skillId||'';V(x=>({...x,clips:[...x.clips,{id:uid(),skillId,label:'',start:fmt(time),end:fmt(time+10),caution:'',memo:''}]}));I(v.clips.length)};
 const save=async()=>{if(mrBusy)return;if(!v.title?.trim())return alert('영상 제목을 입력해 줘.');if(!videoId(v.url))return alert('올바른 유튜브 URL을 입력해 줘.');if(songMode&&!skills.some(s=>s.id===v.songId))return alert('연결할 곡을 먼저 선택해 줘.');if(v.clips.some(c=>!Number.isFinite(sec(c.start))||!Number.isFinite(sec(c.end))||sec(c.start)<0||sec(c.end)<=sec(c.start)))return alert('구간 시작·종료 시간을 확인해 줘. 종료는 시작보다 뒤여야 해.');
-if(!songMode&&v.clips.some(c=>!c.fullVideo&&!c.chapterImported&&!skills.some(s=>s.id===c.skillId)))return alert('구간 시간이 아니라 연결 기술이 선택되지 않았어. 「연결할 기술」에서 기술을 먼저 선택하거나 「전체 영상 선택」을 눌러 줘.');const result={...v};delete result._existing;if(mrFile){MRBusy(true);try{result.mr=await onUploadMR(mrFile);MRFile(null)}catch(err){MRError('MR 업로드 실패: '+(err?.message||''));MRBusy(false);return}MRBusy(false)}onSave(result)};
+if(!songMode&&v.clips.some(c=>!c.fullVideo&&!c.chapterImported&&!skills.some(s=>s.id===c.skillId)))return alert('구간 시간이 아니라 연결 기술이 선택되지 않았어. 「연결할 기술」에서 기술을 먼저 선택하거나 「전체 영상 선택」을 눌러 줘.');const result={...v};delete result._existing;if(mrFile){MRBusy(true);try{result.mr=await onUploadMR(mrFile);MRFile(null)}catch(err){MRError('MR 업로드 실패: '+(err?.message||''));MRBusy(false);return}MRBusy(false)}clearEditorDraft();onSave(result)};
 useEffect(()=>{let live=true;MRUrl('');MRReady(false);if(v.mr?.localAudio){MRUrl(v.mr.localAudio);return}if(v.mr?.path)mediaUrl(v.mr.path).then(url=>{if(live)MRUrl(url)}).catch(e=>{if(live)MRError('MR 음원 주소 오류: '+e.message)});return()=>{live=false}},[v.mr?.path,v.mr?.localAudio]);
 const setMRSettings=values=>{V(old=>({...old,mrSettings:values}));onPersistMRSettings?.(v.id,values)};
 const chosen=skills.find(s=>s.id===(songMode?v.songId:clip?.skillId));return <div className="tech-bookmark dance-bookmark-layout"><div className="tech-modes"><button type="button" className={mode==='practice'?'selected':''} onClick={()=>M('practice')}>연습 모드</button><button type="button" className={mode==='edit'?'selected':''} onClick={()=>M('edit')}>편집 모드</button></div>{songMode&&mode==='practice'&&<div className="mr-source-tabs"><button type="button" className={source==='youtube'?'selected':''} onClick={()=>{Source('youtube');MRReady(false)}}>유튜브</button><button type="button" className={source==='mr'?'selected':''} onClick={()=>{Source('mr');Q(false)}}>MR 음원</button></div>}
