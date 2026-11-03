@@ -6,12 +6,12 @@ const showTime=n=>{const s=Math.max(0,Math.floor(n||0));return String(Math.floor
 const clamp=(v,lo,hi)=>Math.min(hi,Math.max(lo,v));
 const MRPlayer=forwardRef(function MRPlayer({url,clip,repeat=true,settings,onSettingsChange},ref){
  const [ready,R]=useState(false),[busy,B]=useState(false),[playing,P]=useState(false),[time,T]=useState(0),[length,L]=useState(0),[error,E]=useState('');
- const player=useRef(null),position=useRef(0),clock=useRef(0),running=useRef(false),rate=useRef(1),lengthRef=useRef(0),endRef=useRef(0),startRef=useRef(0),repeatRef=useRef(true);
+ const player=useRef(null),position=useRef(0),clock=useRef(0),running=useRef(false),rate=useRef(1),keyRef=useRef(0),lengthRef=useRef(0),repeatRef=useRef(true);
  const key=clamp(Number(settings?.keyShift)||0,-6,6),speed=clamp(Number(settings?.speed)||100,50,125);
- rate.current=speed/100;
+ rate.current=speed/100;keyRef.current=key;
  const clipA=Number.isFinite(Number(clip?.startSeconds))?Number(clip.startSeconds):0;
  const clipB=Number.isFinite(Number(clip?.endSeconds))?Number(clip.endSeconds):0;
- startRef.current=clipA;endRef.current=clipB;repeatRef.current=repeat;
+ repeatRef.current=repeat;
  const current=()=>running.current?position.current+(Tone.now()-clock.current)*rate.current:position.current;
  const stop=()=>{try{player.current?.stop()}catch{}running.current=false;P(false)};
  const playAt=async t=>{
@@ -21,8 +21,8 @@ const MRPlayer=forwardRef(function MRPlayer({url,clip,repeat=true,settings,onSet
    const dur=lengthRef.current,begin=clamp(Number(t)||0,0,Math.max(0,dur-0.05));
    try{player.current.stop()}catch{}
    player.current.loop=false;
-   player.current.detune=key*100;
-   player.current.playbackRate=speed/100;
+   player.current.detune=keyRef.current*100;
+   player.current.playbackRate=rate.current;
    player.current.start(undefined,begin);
    position.current=begin;clock.current=Tone.now();running.current=true;T(begin);P(true);E('');
   }catch(err){E('MR 재생 실패: '+(err?.message||'재생 권한을 확인해 줘'))}
@@ -32,9 +32,8 @@ const MRPlayer=forwardRef(function MRPlayer({url,clip,repeat=true,settings,onSet
  useImperativeHandle(ref,()=>({playFrom:playAt,pause,stop,getTime:()=>current(),isReady:()=>Boolean(player.current?.loaded)}));
  useEffect(()=>{let cancelled=false;stop();player.current?.dispose();player.current=null;R(false);B(Boolean(url));E('');T(0);L(0);position.current=0;
   if(!url){B(false);return}
-  const p=new Tone.GrainPlayer({url,loop:false,grainSize:0.12,overlap:0.06,detune:key*100,playbackRate:speed/100}).toDestination();
+  const p=new Tone.GrainPlayer({url,loop:false,grainSize:0.12,overlap:0.06,detune:keyRef.current*100,playbackRate:rate.current,onload:()=>{if(cancelled)return;const len=p.buffer.duration;lengthRef.current=len;L(len);R(true);B(false)},onerror:(err)=>{if(!cancelled){E('MR 파일을 불러오지 못했어: '+(err?.message||''));B(false)}}}).toDestination();
   player.current=p;
-  p.buffer.load(url).then(()=>{if(cancelled)return;const len=p.buffer.duration;lengthRef.current=len;L(len);R(true);B(false)}).catch(err=>{if(!cancelled){E('MR 파일을 불러오지 못했어: '+(err?.message||''));B(false)}});
   return()=>{cancelled=true;try{p.stop();p.dispose()}catch{}if(player.current===p)player.current=null;running.current=false};
  },[url]);
  useEffect(()=>{if(player.current){player.current.detune=key*100;player.current.playbackRate=speed/100}},[key,speed]);
