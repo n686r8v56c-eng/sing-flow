@@ -8,7 +8,7 @@ const MRPlayer=forwardRef(function MRPlayer({url,clip,repeat=true,settings,onSet
  const [ready,R]=useState(false),[busy,B]=useState(false),[playing,P]=useState(false),[time,T]=useState(0),[length,L]=useState(0),[error,E]=useState('');
  const player=useRef(null),position=useRef(0),clock=useRef(0),running=useRef(false),rate=useRef(1),keyRef=useRef(0),lengthRef=useRef(0),repeatRef=useRef(true);
  const key=clamp(Number(settings?.keyShift)||0,-6,6),speed=clamp(Number(settings?.speed)||100,50,125);
- rate.current=speed/100;keyRef.current=key;
+ keyRef.current=key;
  const clipA=Number.isFinite(Number(clip?.startSeconds))?Number(clip.startSeconds):0;
  const clipB=Number.isFinite(Number(clip?.endSeconds))?Number(clip.endSeconds):0;
  repeatRef.current=repeat;
@@ -36,7 +36,8 @@ const MRPlayer=forwardRef(function MRPlayer({url,clip,repeat=true,settings,onSet
   player.current=p;
   return()=>{cancelled=true;try{p.stop();p.dispose()}catch{}if(player.current===p)player.current=null;running.current=false;onReadyChange?.(false)};
  },[url]);
- useEffect(()=>{if(player.current){player.current.detune=key*100;player.current.playbackRate=speed/100}},[key,speed]);
+ useEffect(()=>{if(running.current){position.current=current();clock.current=Tone.now()}rate.current=speed/100;if(player.current)player.current.playbackRate=rate.current},[speed]);
+ useEffect(()=>{if(player.current)player.current.detune=key*100},[key]);
  useEffect(()=>{if(!ready)return;const timer=setInterval(()=>{
    if(!running.current)return;
    const p=current(),end=clipB>clipA?Math.min(clipB,lengthRef.current):lengthRef.current;
