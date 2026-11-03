@@ -8,9 +8,9 @@ function RecordingAudio({log}){
  useEffect(()=>{let live=true;setUrl(log.localAudio||'');setError('');if(log.media?.path&&configured)mediaUrl(log.media.path).then(u=>{if(live)setUrl(u)}).catch(e=>{if(live)setError(e.message)});return()=>{live=false}},[log.id,log.localAudio,log.media?.path]);
  return url?<audio controls preload="none" src={url} className="sing-voice-audio"/>:<small className="sing-voice-muted">{error||'오디오 불러오는 중'}</small>;
 }
-export default function VoiceRecordingLog({skillId,kind,bookmarkId,clipId,logs=[],onSave,onDelete,showRecorder=true}){
+export default function VoiceRecordingLog({skillId,kind,bookmarkId,clipId,logs=[],onSave,onDelete,showRecorder=true,showAllForSkill=false}){
  const all=logs.filter(l=>l.type===kind&&l.sourceId===skillId);
- const entries=bookmarkId&&clipId?all.filter(l=>l.bookmarkId===bookmarkId&&l.clipId===clipId):all;
+ const entries=!showAllForSkill&&bookmarkId&&clipId?all.filter(l=>l.bookmarkId===bookmarkId&&l.clipId===clipId):all;
  const [a,A]=useState(''),[b,B]=useState('');
  if(!skillId)return <p className="sing-voice-muted">연결된 기술·훈련을 먼저 선택해 줘.</p>;
  return <div className="sing-voice-recordings">
