@@ -135,11 +135,33 @@ const importChapters=()=>{
  try{duration=Number(player.current?.getDuration?.()||0)}catch{}
  duration=duration||videoDuration;
  if(!pointMode&&(!Number.isFinite(duration)||duration<=entries[entries.length-1].start))return ChapterNotice('마지막 구간의 종료 시각을 확인하려면 유튜브 영상을 먼저 불러와 줘. 영상이 로드된 후 다시 눌러 줘.');
+ if(pointMode){
+  // A training chapter is also a quick time marker. Match start time so repeated pastes
+  // update the label without overwriting an existing skill link, memo or caution.
+  const existingStarts=new Set(v.clips.map(c=>sec(c.start)));
+  const created=entries.filter(e=>!existingStarts.has(e.start)).length;
+  const updated=entries.filter(e=>existingStarts.has(e.start)).length;
+  V(old=>{
+   const clips=[...(old.clips||[])];
+   entries.forEach(entry=>{
+    const match=clips.findIndex(c=>sec(c.start)===entry.start);
+    if(match>=0){
+     clips[match]={...clips[match],label:entry.label,quickMarked:true};
+    }else{
+     clips.push({id:uid(),skillId:'',label:entry.label,start:fmt(entry.start),end:fmt(entry.start+1),caution:'',memo:'',chapterImported:true,quickMarked:true});
+    }
+   });
+   return {...old,clips};
+  });
+  ChapterNotice('타임마커 '+created+'개 생성 · '+updated+'개 제목 업데이트 · 연결 기술과 메모 유지');
+  ChapterText('');
+  return;
+ }
  const previous=v.clips[index]||v.clips[v.clips.length-1];
  const skillId=songMode?(v.songId||''):(previous?.skillId||'');
  const clips=entries.map((entry,i)=>({
   id:uid(),skillId,label:entry.label,start:fmt(entry.start),
-  end:fmt(pointMode?entry.start+1:(i+1<entries.length?entries[i+1].start:Math.ceil(duration))),
+  end:fmt(i+1<entries.length?entries[i+1].start:Math.ceil(duration)),
   caution:'',memo:'',chapterImported:true
  }));
  const existing=new Set(v.clips.map(c=>sec(c.start)+'|'+String(c.label||'').trim()));
