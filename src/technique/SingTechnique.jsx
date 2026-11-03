@@ -45,4 +45,5 @@ export default function SingTechnique({value,onChange}){
  </>:<>{input('제목','title',{required:true})}<label>메모<textarea value={modal.item.memo||''} onChange={e=>change('memo',e.target.value)}/></label></>}
  <div className="sing-tech-formbuttons"><button type="button" className="sing-tech-primary" onClick={()=>saveItem(modal.type,modal.item)}><Check size={16}/> 저장</button>{d[modal.type].some(x=>x.id===modal.item.id)&&<button type="button" className="sing-tech-delete" onClick={()=>remove(modal.type,modal.item.id)}><Trash2 size={15}/> 삭제</button>}</div>
  </div>}</section></div>}
- </div>
+ </div>;
+}
