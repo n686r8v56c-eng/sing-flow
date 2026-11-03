@@ -1,4 +1,4 @@
-import React,{useState} from 'react';
+import React,{useId,useState} from 'react';
 import {BookOpen} from 'lucide-react';
 import {trainingGuide,trainingGuideCategories} from './trainingGuide';
 import './training-classification.css';
@@ -8,6 +8,7 @@ export default function TrainingClassification({
  existingCategories=[],trainings=[],names=false
 }){
  const [guideOpen,setGuideOpen]=useState(false);
+ const unique=useId();const majorId=unique+'-major',minorId=unique+'-minor';
  const majors=[...new Set([...trainingGuideCategories,...existingCategories,...trainings.map(x=>x.category)].filter(Boolean))];
  const minors=[...new Set([...(trainingGuide[category]||[]),...trainings.filter(x=>x.category===category).map(x=>x.subcategory)].filter(Boolean))];
  return <div className="training-classification">
@@ -28,13 +29,13 @@ export default function TrainingClassification({
   </div>}
   <div className="training-classification-inputs">
    <label className="field"><span>대분류</span><input
-     name={names?'category':undefined} list="sing-training-major"
+     name={names?'category':undefined} list={majorId}
      value={category||''} onChange={e=>{onCategoryChange(e.target.value);onSubcategoryChange('')}} placeholder="대분류 직접 입력"/></label>
    <label className="field"><span>소분류</span><input
-     name={names?'subcategory':undefined} list="sing-training-minor"
+     name={names?'subcategory':undefined} list={minorId}
      value={subcategory||''} onChange={e=>onSubcategoryChange(e.target.value)} placeholder="소분류 직접 입력"/></label>
-   <datalist id="sing-training-major">{majors.map(x=><option key={x} value={x}/>)}</datalist>
-   <datalist id="sing-training-minor">{minors.map(x=><option key={x} value={x}/>)}</datalist>
+   <datalist id={majorId}>{majors.map(x=><option key={x} value={x}/>)}</datalist>
+   <datalist id={minorId}>{minors.map(x=><option key={x} value={x}/>)}</datalist>
   </div>
  </div>
 }
