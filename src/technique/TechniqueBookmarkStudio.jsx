@@ -188,13 +188,13 @@ const editQuickMarker=(markerId,key,value)=>{
  V(old=>({...old,clips:old.clips.map(c=>c.id===markerId?{...c,[key]:value}:c)}));
 };
 const add=()=>{const previous=v.clips[index]||v.clips[v.clips.length-1];const skillId=songMode?v.songId||'':previous?.skillId||'';V(x=>({...x,clips:[...x.clips,{id:uid(),skillId,label:'',start:fmt(time),end:fmt(time+(pointMode?1:10)),caution:'',memo:''}]}));I(v.clips.length)};
-const save=async()=>{if(mrBusy)return;if(!v.title?.trim())return alert(pointMode?'타임마커 노트 제목을 입력해 줘.':'영상 제목을 입력해 줘.');if((!pointMode||String(v.url||'').trim())&&!videoId(v.url))return alert('올바른 유튜브 URL을 입력해 줘.');if(songMode&&!skills.some(s=>s.id===v.songId))return alert('연결할 곡을 먼저 선택해 줘.');if(v.clips.some(c=>!Number.isFinite(sec(c.start))||!Number.isFinite(sec(c.end))||sec(c.start)<0||sec(c.end)<=sec(c.start)))return alert('구간 시작·종료 시간을 확인해 줘. 종료는 시작보다 뒤여야 해.');
-if(!songMode&&v.clips.some(c=>!pointMode&&!c.fullVideo&&!c.chapterImported&&!skills.some(s=>s.id===c.skillId)))return alert('구간 시간이 아니라 연결 기술이 선택되지 않았어. 「연결할 기술」에서 기술을 먼저 선택하거나 「전체 영상 선택」을 눌러 줘.');const result={...v};delete result._existing;if(mrFile){MRBusy(true);try{result.mr=await onUploadMR(mrFile);MRFile(null)}catch(err){MRError('MR 업로드 실패: '+(err?.message||''));MRBusy(false);return}MRBusy(false)}clearEditorDraft();onSave(result)};
+const save=async()=>{if(mrBusy)return;if(!pointMode&&!v.title?.trim())return alert('영상 제목을 입력해 줘.');if((!pointMode||String(v.url||'').trim())&&!videoId(v.url))return alert('올바른 유튜브 URL을 입력해 줘.');if(songMode&&!skills.some(s=>s.id===v.songId))return alert('연결할 곡을 먼저 선택해 줘.');if(v.clips.some(c=>!Number.isFinite(sec(c.start))||!Number.isFinite(sec(c.end))||sec(c.start)<0||sec(c.end)<=sec(c.start)))return alert('구간 시작·종료 시간을 확인해 줘. 종료는 시작보다 뒤여야 해.');
+if(!songMode&&v.clips.some(c=>!pointMode&&!c.fullVideo&&!c.chapterImported&&!skills.some(s=>s.id===c.skillId)))return alert('구간 시간이 아니라 연결 기술이 선택되지 않았어. 「연결할 기술」에서 기술을 먼저 선택하거나 「전체 영상 선택」을 눌러 줘.');const result={...v};if(pointMode&&!String(result.title||'').trim())result.title=String(v.clips[0]?.label||'훈련 타임마커 노트').trim();delete result._existing;if(mrFile){MRBusy(true);try{result.mr=await onUploadMR(mrFile);MRFile(null)}catch(err){MRError('MR 업로드 실패: '+(err?.message||''));MRBusy(false);return}MRBusy(false)}clearEditorDraft();onSave(result)};
 useEffect(()=>{let live=true;MRUrl('');MRReady(false);if(v.mr?.localAudio){MRUrl(v.mr.localAudio);return}if(v.mr?.path)mediaUrl(v.mr.path).then(url=>{if(live)MRUrl(url)}).catch(e=>{if(live)MRError('MR 음원 주소 오류: '+e.message)});return()=>{live=false}},[v.mr?.path,v.mr?.localAudio]);
 const setMRSettings=values=>{V(old=>({...old,mrSettings:values}));onPersistMRSettings?.(v.id,values)};
 const chosen=linkableSkills.find(s=>s.id===(songMode?v.songId:clip?.skillId));
 if(pointMode){
- const activeMarker=v.clips[index]||v.clips[0]||null;
+ const activeMarker=v.clips[Math.min(index,Math.max(0,v.clips.length-1))]||null;
  const activeSkill=linkableSkills.find(skill=>skill.id===activeMarker?.skillId);
  const isLinkedTechnique=linkedTechniqueSkills.some(skill=>skill.id===activeSkill?.id);
  const recordingType=isLinkedTechnique?'technique':'training';
@@ -207,10 +207,10 @@ if(pointMode){
    <button type="button" className={mode==='study'?'selected':''} onClick={()=>M('study')}>스터디</button>
    <button type="button" className={mode==='practice'?'selected':''} onClick={()=>{M('practice');I(x=>Math.min(x,Math.max(v.clips.length-1,0)))}}>연습</button>
   </div>
-  {mode==='practice'&&<nav className="tech-training-timeline" aria-label="타임마커 재생 목록">
+  <nav className="tech-training-timeline" hidden={mode!=='practice'} aria-label="타임마커 재생 목록">
    {v.clips.map((mark,i)=><button type="button" key={mark.id||i} className={index===i?'selected':''} onClick={()=>{I(i);S('');seek(mark.start)}} title={mark.label||mark.start} aria-label={mark.start+' 시점 재생'}>{mark.start}</button>)}
    {!v.clips.length&&<small className="tech-muted">스터디에서 타임마커를 추가해 줘.</small>}
-  </nav>}
+  </nav>
   <div className="tech-video-shell"><Video id={id} onReady={p=>{player.current=p;Q(Boolean(p))}} onPlaying={P}/></div>
   {mode==='study'?<>
    <section className="tech-quickmark" aria-label="훈련 타임마커">
