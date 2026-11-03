@@ -64,7 +64,7 @@ const [v,V]=useState(()=>{
  const saved=restoredDraft.current;
  return {...item,...(saved.v||{}),mr:item.mr,clips:Array.isArray(saved.v?.clips)?saved.v.clips:normalizedClips(item)};
 }),[mode,M]=useState(restoredDraft.current.mode|| (item._existing?'practice':'edit')),[index,I]=useState(restoredDraft.current.index||0),[repeat,R]=useState(true),[playing,P]=useState(false),[time,T]=useState(0),[videoDuration,VideoDuration]=useState(0),[zoom,Z]=useState(false),[status,S]=useState(''),[note,N]=useState(''),[ready,Q]=useState(false),[mrReady,MRReady]=useState(false),[source,Source]=useState('youtube'),[mrFile,MRFile]=useState(null),[mrBusy,MRBusy]=useState(false),[mrUrl,MRUrl]=useState(''),[mrError,MRError]=useState(''),[chapterText,ChapterText]=useState(restoredDraft.current.chapterText||''),[chapterNotice,ChapterNotice]=useState('');
-const player=useRef(null),mrPlayer=useRef(null),playbackPending=useRef(0),playbackCallback=useRef(onPlaybackSeconds),playbackActive=useRef(false),edited=useRef(Boolean(item.title)),clip=v.clips[index],id=videoId(v.url),current=skills.filter(s=>s.genre===v.genre),[titleLoading,TL]=useState(false),[titleNotice,TN]=useState('');
+const player=useRef(null),mrPlayer=useRef(null),playbackPending=useRef(0),playbackCallback=useRef(onPlaybackSeconds),playbackActive=useRef(false),edited=useRef(Boolean(item.title||restoredDraft.current.v?.title)),clip=v.clips[index],id=videoId(v.url),current=skills.filter(s=>s.genre===v.genre),[titleLoading,TL]=useState(false),[titleNotice,TN]=useState('');
 // Safari can discard an inactive tab or cross-origin iframe; keep edit state across reloads.
 useEffect(()=>{
  try{
