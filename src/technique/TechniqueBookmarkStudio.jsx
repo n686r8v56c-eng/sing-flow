@@ -76,12 +76,14 @@ const clearEditorDraft=()=>{try{localStorage.removeItem(draftKey)}catch{}};
 autoSaveRef.current=onAutoSave;
 useEffect(()=>{
  // Save completed field edits without closing the editor. Incomplete entries stay in the local draft.
- if((mode!=='edit'&&!pointMode)||!autoSaveRef.current||!String(v.title||'').trim()||(!pointMode&&!videoId(v.url)))return;
+ if((mode!=='edit'&&!pointMode)||!autoSaveRef.current||(!pointMode&&!String(v.title||'').trim())||(!pointMode&&!videoId(v.url)))return;
+ if(pointMode&&!item._existing&&!v.clips.length)return;
  if(songMode&&!skills.some(skill=>skill.id===v.songId))return;
  if(v.clips.some(c=>!Number.isFinite(sec(c.start))||!Number.isFinite(sec(c.end))||sec(c.start)<0||sec(c.end)<=sec(c.start)))return;
  if(!songMode&&v.clips.some(c=>!pointMode&&!c.fullVideo&&!c.chapterImported&&!skills.some(skill=>skill.id===c.skillId)))return;
  const timer=setTimeout(()=>{
   const cleaned={...v};
+  if(pointMode&&!String(cleaned.title||'').trim())cleaned.title=String(v.clips[0]?.label||'훈련 타임마커 노트').trim();
   delete cleaned._existing;
   autoSaveRef.current?.(cleaned);
  },700);
